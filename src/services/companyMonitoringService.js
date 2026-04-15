@@ -32,6 +32,8 @@ const deriveLifecycle = (subscription) => {
   const daysLeft = validUntil ? Math.ceil((validUntil.getTime() - now.getTime()) / 86400000) : null;
 
   if (status === 'active') {
+    const isTrial = subscription?.planId === 'trial';
+
     if (validUntil && validUntil < now) {
       return {
         lifecycle: 'churn',
@@ -44,19 +46,19 @@ const deriveLifecycle = (subscription) => {
 
     if (daysLeft !== null && daysLeft <= 7) {
       return {
-        lifecycle: 'expiring',
+        lifecycle: isTrial ? 'trial_expiring' : 'expiring',
         tone: 'warning',
-        label: `Akan berakhir (${Math.max(daysLeft, 0)} hari)`,
-        detail: 'Butuh follow-up renewal',
+        label: isTrial ? `Trial berakhir (${Math.max(daysLeft, 0)} hari)` : `Akan berakhir (${Math.max(daysLeft, 0)} hari)`,
+        detail: isTrial ? 'Konversi ke berbayar' : 'Butuh follow-up renewal',
         daysLeft,
       };
     }
 
     return {
-      lifecycle: 'subscribed',
-      tone: 'success',
-      label: 'Berlangganan aktif',
-      detail: 'Coverage aman',
+      lifecycle: isTrial ? 'trial' : 'subscribed',
+      tone: isTrial ? 'info' : 'success',
+      label: isTrial ? 'Masa Trial' : 'Berlangganan aktif',
+      detail: isTrial ? 'Proses onboarding' : 'Coverage aman',
       daysLeft,
     };
   }
@@ -114,7 +116,7 @@ const mapRiskPriority = (riskScore) => {
   return 'Low';
 };
 
-const toMapPoint = (branch, companyName) => {
+const toMapPoint = (branch, companyName, companyId) => {
   const latitude = normalizeCoordinate(branch.latitude);
   const longitude = normalizeCoordinate(branch.longitude);
 
@@ -130,6 +132,7 @@ const toMapPoint = (branch, companyName) => {
 
   return {
     id: branch.id,
+    companyId,
     companyName,
     branchName: branch.name,
     city: extractCity(branch.address),
@@ -216,22 +219,30 @@ const composeSnapshot = ({ companies, boardingHouses, summaryByHouse, subscripti
   });
 
   const totals = companyInsights.reduce(
-    (accumulator, company) => ({
-      totalCompanies: accumulator.totalCompanies + 1,
-      subscribedCount: accumulator.subscribedCount + (['subscribed', 'expiring'].includes(company.lifecycle.lifecycle) ? 1 : 0),
-      nonSubscribedCount: accumulator.nonSubscribedCount + (!['subscribed', 'expiring'].includes(company.lifecycle.lifecycle) ? 1 : 0),
-      churnCount: accumulator.churnCount + (company.lifecycle.lifecycle === 'churn' ? 1 : 0),
-      expiringCount: accumulator.expiringCount + (company.lifecycle.lifecycle === 'expiring' ? 1 : 0),
-      pendingPaymentCount: accumulator.pendingPaymentCount + (company.lifecycle.lifecycle === 'pending_payment' ? 1 : 0),
-      totalBranches: accumulator.totalBranches + company.branchCount,
-      totalRooms: accumulator.totalRooms + company.roomCount,
-      activeTenants: accumulator.activeTenants + company.activeTenants,
-      monthlyRevenue: accumulator.monthlyRevenue + company.monthlyRevenue,
-      occupiedRooms: accumulator.occupiedRooms + company.occupiedRooms,
-    }),
+    (accumulator, company) => {
+      const { lifecycle: lc } = company.lifecycle;
+      const isTrial = lc === 'trial' || lc === 'trial_expiring';
+      const isSubscribed = lc === 'subscribed' || lc === 'expiring' || isTrial;
+
+      return {
+        totalCompanies: accumulator.totalCompanies + 1,
+        subscribedCount: accumulator.subscribedCount + (isSubscribed ? 1 : 0),
+        trialCount: accumulator.trialCount + (isTrial ? 1 : 0),
+        nonSubscribedCount: accumulator.nonSubscribedCount + (!isSubscribed ? 1 : 0),
+        churnCount: accumulator.churnCount + (lc === 'churn' ? 1 : 0),
+        expiringCount: accumulator.expiringCount + (lc === 'expiring' || lc === 'trial_expiring' ? 1 : 0),
+        pendingPaymentCount: accumulator.pendingPaymentCount + (lc === 'pending_payment' ? 1 : 0),
+        totalBranches: accumulator.totalBranches + company.branchCount,
+        totalRooms: accumulator.totalRooms + company.roomCount,
+        activeTenants: accumulator.activeTenants + company.activeTenants,
+        monthlyRevenue: accumulator.monthlyRevenue + company.monthlyRevenue,
+        occupiedRooms: accumulator.occupiedRooms + company.occupiedRooms,
+      };
+    },
     {
       totalCompanies: 0,
       subscribedCount: 0,
+      trialCount: 0,
       nonSubscribedCount: 0,
       churnCount: 0,
       expiringCount: 0,
@@ -249,7 +260,7 @@ const composeSnapshot = ({ companies, boardingHouses, summaryByHouse, subscripti
     : 0;
 
   const mapPoints = companyInsights
-    .flatMap((company) => company.branches.map((branch) => toMapPoint(branch, company.name)))
+    .flatMap((company) => company.branches.map((branch) => toMapPoint(branch, company.name, company.id)))
     .filter(Boolean);
 
   const winbackQueue = companyInsights
@@ -266,54 +277,37 @@ const composeSnapshot = ({ companies, boardingHouses, summaryByHouse, subscripti
 };
 
 const fetchCompaniesSnapshot = async (token) => {
-  const [companies, boardingHouses] = await Promise.all([
-    httpClient.get('/api/companies', { token }),
-    httpClient.get('/api/boarding-houses', { token }),
-  ]);
+  const result = await httpClient.get('/api/companies/monitoring-snapshot', { token });
+  const companyList = Array.isArray(result) ? result : [];
 
-  const houses = Array.isArray(boardingHouses) ? boardingHouses : [];
-  const summaryPairs = await Promise.all(
-    houses.map(async (house) => {
-      try {
-        const summary = await httpClient.get(`/api/boarding-houses/${house.id}/summary`, { token });
-        return [house.id, summary];
-      } catch (error) {
-        return [house.id, null];
-      }
-    }),
-  );
+  const boardingHouses = [];
+  const summaryPairs = [];
+  const subscriptionPairs = [];
 
-  const summaryByHouse = new Map(summaryPairs);
+  companyList.forEach((company) => {
+    subscriptionPairs.push([company.id, company.subscription]);
 
-  const companyList = Array.isArray(companies) ? companies : [];
-  const ownerIds = [...new Set(companyList.map((company) => company.userId).filter(Boolean))];
-  const ownerDetails = await Promise.all(
-    ownerIds.map(async (ownerId) => {
-      try {
-        const profile = await httpClient.get(`/users/${ownerId}`, { token });
-        return [ownerId, profile];
-      } catch (error) {
-        return [ownerId, null];
-      }
-    }),
-  );
+    (company.branches || []).forEach((branch) => {
+      boardingHouses.push({
+        ...branch,
+        companyId: company.id,
+      });
 
-  const ownerById = new Map(ownerDetails);
-  const subscriptionByCompany = new Map(
-    companyList.map((company) => {
-      const owner = ownerById.get(company.userId);
-      const subscription = owner?.company?.id === company.id
-        ? owner.company.subscription || null
-        : null;
-      return [company.id, subscription];
-    }),
-  );
+      summaryPairs.push([branch.id, {
+        totalRooms: branch.totalRooms,
+        occupiedRooms: branch.occupiedRooms,
+        activeTenants: branch.activeTenants,
+        currentMonthlyRevenue: branch.currentMonthlyRevenue,
+        occupancyRate: branch.occupancyRate,
+      }]);
+    });
+  });
 
   return composeSnapshot({
     companies: companyList,
-    boardingHouses: houses,
-    summaryByHouse,
-    subscriptionByCompany,
+    boardingHouses,
+    summaryByHouse: new Map(summaryPairs),
+    subscriptionByCompany: new Map(subscriptionPairs),
   });
 };
 

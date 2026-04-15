@@ -3,3 +3,4 @@ export { default as httpClient } from './httpClient';
 export { default as monitoringService } from './monitoringService';
 export { default as companyMonitoringService } from './companyMonitoringService';
 export { default as userAuthService } from './userAuthService';
+export { default as notificationService } from './notificationService';

@@ -17,6 +17,13 @@ const itemsConfig = [
     tone: 'success',
   },
   {
+    id: 'trial',
+    label: 'Masa Trial',
+    key: 'trialCount',
+    icon: RefreshCcw,
+    tone: 'info',
+  },
+  {
     id: 'nonSubscribed',
     label: 'Belum Berlangganan',
     key: 'nonSubscribedCount',

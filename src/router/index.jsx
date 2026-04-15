@@ -16,6 +16,7 @@ const NotificationsPage = lazy(() => import('../pages/NotificationsPage'));
 const ArchitecturePage = lazy(() => import('../pages/ArchitecturePage'));
 const ComponentsPage = lazy(() => import('../pages/ComponentsPage'));
 const Login = lazy(() => import('../pages/Login'));
+const Signup = lazy(() => import('../pages/Signup'));
 const ErrorPage = lazy(() => import('../pages/ErrorPage'));
 
 function AppRouter() {
@@ -24,7 +25,9 @@ function AppRouter() {
       <Suspense fallback={<Spinner fullscreen label="Memuat halaman admin monitoring..." />}>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<ProtectedRoute />}>
+
             <Route path="/" element={<MainTemplate />}>
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />

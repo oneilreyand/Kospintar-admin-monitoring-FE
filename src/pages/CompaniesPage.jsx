@@ -5,10 +5,8 @@ import CompanyCoverageMap from '../components/organisms/CompanyCoverageMap';
 import CompanyDetailPanel from '../components/organisms/CompanyDetailPanel';
 import CompanyKpiGrid from '../components/organisms/CompanyKpiGrid';
 import CompanyListPanel from '../components/organisms/CompanyListPanel';
-import CompanyManualQueryPanel from '../components/organisms/CompanyManualQueryPanel';
 import CompanyWinbackPanel from '../components/organisms/CompanyWinbackPanel';
 import { companyMonitoringService } from '../services';
-import { applyCompanyManualQuery, parseCompanyManualQuery } from '../utils/companyManualQuery';
 
 function CompaniesPage() {
   const token = useSelector((state) => state.authReducers.token);
@@ -17,11 +15,8 @@ function CompaniesPage() {
   const [error, setError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
   const [filter, setFilter] = useState('all');
-  const [query, setQuery] = useState('');
-  const [manualQueryText, setManualQueryText] = useState('');
-  const [manualQueryError, setManualQueryError] = useState('');
-  const [compiledManualQuery, setCompiledManualQuery] = useState({ clauses: [] });
-  const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+   const [query, setQuery] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -63,7 +58,10 @@ function CompaniesPage() {
     return companies
       .filter((company) => {
         if (filter === 'all') return true;
-        return company.lifecycle.lifecycle === filter;
+        const lc = company.lifecycle.lifecycle;
+        if (filter === 'subscribed') return lc === 'subscribed' || lc === 'trial';
+        if (filter === 'expiring') return lc === 'expiring' || lc === 'trial_expiring';
+        return lc === filter;
       })
       .filter((company) => {
         if (!lowerQuery) return true;
@@ -74,32 +72,19 @@ function CompaniesPage() {
           company.address.toLowerCase().includes(lowerQuery)
         );
       })
-      .filter((company) => applyCompanyManualQuery(company, compiledManualQuery))
       .sort((left, right) => right.riskScore - left.riskScore);
-  }, [companies, filter, query, compiledManualQuery]);
-
-  const activeManualClauseCount = compiledManualQuery?.clauses?.length || 0;
-
-  const handleApplyManualQuery = () => {
-    try {
-      const parsed = parseCompanyManualQuery(manualQueryText);
-      setCompiledManualQuery(parsed);
-      setManualQueryError('');
-    } catch (parseError) {
-      setManualQueryError(parseError.message || 'Manual query tidak valid.');
-    }
-  };
-
-  const handleClearManualQuery = () => {
-    setManualQueryText('');
-    setManualQueryError('');
-    setCompiledManualQuery({ clauses: [] });
-  };
+  }, [companies, filter, query]);
 
   const selectedCompany = useMemo(
     () => companies.find((company) => company.id === selectedCompanyId) || null,
     [companies, selectedCompanyId],
   );
+
+  const filteredMapPoints = useMemo(() => {
+    const allPoints = snapshot?.mapPoints || [];
+    if (!selectedCompanyId) return allPoints;
+    return allPoints.filter((point) => point.companyId === selectedCompanyId);
+  }, [snapshot?.mapPoints, selectedCompanyId]);
 
   if (loading) {
     return <Spinner label="Memuat monitoring company dari backend..." />;
@@ -129,24 +114,12 @@ function CompaniesPage() {
     <div className="page-shell">
       <section className="page-header">
         <div>
-          <p className="eyebrow">Company Monitoring</p>
-          <h1 className="page-title">Lifecycle langganan, sebaran cabang, dan peluang win-back.</h1>
-          <p className="page-subtitle">
-            Data disusun dari endpoint `KospintarBE` (`companies`, `boarding-houses`, `boarding-houses/:id/summary`, `users/:id`) agar admin bisa memantau company berlangganan vs churn secara operasional.
-          </p>
+          <h1 className="eyebrow">Analisis Siklus Langganan, Sebaran Cabang, dan Retensi</h1>
+          <h1 className="page-title">Company Monitoring</h1>
         </div>
       </section>
 
       <CompanyKpiGrid totals={snapshot?.totals} />
-
-      <CompanyManualQueryPanel
-        queryText={manualQueryText}
-        onQueryTextChange={setManualQueryText}
-        onApply={handleApplyManualQuery}
-        onClear={handleClearManualQuery}
-        parseError={manualQueryError}
-        activeClauseCount={activeManualClauseCount}
-      />
 
       <section className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
         <CompanyListPanel
@@ -161,7 +134,10 @@ function CompaniesPage() {
         <CompanyDetailPanel company={selectedCompany} />
       </section>
 
-      <CompanyCoverageMap mapPoints={snapshot?.mapPoints || []} />
+      <CompanyCoverageMap 
+        mapPoints={filteredMapPoints} 
+        title={selectedCompany ? `Sebaran Cabang: ${selectedCompany.name}` : undefined}
+      />
 
       <CompanyWinbackPanel
         companies={snapshot?.winbackQueue || []}

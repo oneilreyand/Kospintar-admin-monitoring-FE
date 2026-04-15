@@ -62,11 +62,6 @@ function Sidebar({ isOpen, closeSidebar }) {
     [alertCount],
   );
 
-  const scopeOptions = [
-    { id: 'all', label: 'Semua Company' },
-    { id: 'risk', label: 'High Risk' },
-    { id: 'priority', label: 'Prioritas Hari Ini' },
-  ];
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -113,22 +108,6 @@ function Sidebar({ isOpen, closeSidebar }) {
           </div>
 
           <div className="w-full overflow-hidden transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100">
-            <div className="relative">
-              <select
-                className="block w-full cursor-pointer appearance-none rounded-lg border border-slate-300/30 bg-sidebar-bg px-3 py-2 text-sm text-sidebar-text focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-dark-sidebar dark:text-dark-text"
-                value={activeScope}
-                onChange={(event) => setActiveScope(event.target.value)}
-              >
-                {scopeOptions.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-sidebar-text dark:text-gray-300">
-                <ChevronDown size={16} />
-              </div>
-            </div>
           </div>
         </div>
 

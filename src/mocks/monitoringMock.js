@@ -35,21 +35,19 @@ const mockMonitoringData = {
       { label: 'Organic', value: 'Rp 194 jt' },
       { label: 'CRM', value: 'Rp 127 jt' },
     ],
+    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     series: [
-      { label: 'Jan', value: 24 },
-      { label: 'Feb', value: 36 },
-      { label: 'Mar', value: 32 },
-      { label: 'Apr', value: 48 },
-      { label: 'May', value: 44 },
-      { label: 'Jun', value: 57 },
-      { label: 'Jul', value: 54 },
-      { label: 'Aug', value: 67 },
-      { label: 'Sep', value: 72 },
-      { label: 'Oct', value: 70 },
-      { label: 'Nov', value: 81 },
-      { label: 'Dec', value: 88 },
+      {
+        name: 'Impression',
+        data: [168, 174, 162, 178, 172, 184, 192, 218, 234, 224, 242, 238],
+      },
+      {
+        name: 'Data Traffic',
+        data: [42, 38, 54, 48, 56, 44, 62, 84, 108, 114, 132, 118],
+      },
     ],
   },
+
   trafficChannels: [
     {
       name: 'Paid Social',

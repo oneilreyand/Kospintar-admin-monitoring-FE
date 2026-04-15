@@ -1,4 +1,5 @@
-import { Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { useState, useMemo } from 'react';
 import SurfaceCard from '../atoms/SurfaceCard';
 import StatusBadge from '../atoms/StatusBadge';
 
@@ -17,6 +18,7 @@ const riskTone = {
   Low: 'success',
 };
 
+const ITEMS_PER_PAGE = 8;
 const formatNumber = (value) => new Intl.NumberFormat('id-ID').format(Number(value || 0));
 
 function CompanyListPanel({
@@ -28,8 +30,27 @@ function CompanyListPanel({
   query,
   onQueryChange,
 }) {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page when filter or query changes
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [filter, query]);
+
+  const totalPages = Math.ceil(companies.length / ITEMS_PER_PAGE);
+  const paginatedCompanies = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return companies.slice(start, start + ITEMS_PER_PAGE);
+  }, [companies, currentPage]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
   return (
-    <SurfaceCard className="overflow-hidden p-5">
+    <SurfaceCard className="flex h-full flex-col overflow-hidden p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-lg font-semibold text-slate-900">Company List</p>
@@ -37,8 +58,8 @@ function CompanyListPanel({
             Pantau status langganan, risiko churn, dan kapasitas operasional tiap company.
           </p>
         </div>
-        <div className="relative min-w-[260px] flex-1 max-w-[320px]">
-          <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <div className="relative flex-1 min-w-[260px] max-w-[320px]">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
             type="text"
             value={query}
@@ -66,7 +87,7 @@ function CompanyListPanel({
         ))}
       </div>
 
-      <div className="mt-5 overflow-x-auto">
+      <div className="mt-5 flex-1 overflow-x-auto min-h-[400px]">
         <table className="min-w-full">
           <thead>
             <tr className="border-b border-slate-100 text-left text-xs uppercase tracking-[0.16em] text-slate-400">
@@ -78,7 +99,7 @@ function CompanyListPanel({
             </tr>
           </thead>
           <tbody>
-            {companies.map((company) => (
+            {paginatedCompanies.map((company) => (
               <tr
                 key={company.id}
                 className={`cursor-pointer border-b border-slate-100 transition last:border-b-0 ${
@@ -112,11 +133,67 @@ function CompanyListPanel({
         </table>
       </div>
 
-      {!companies.length ? (
+      {companies.length > 0 ? (
+        <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+          <p className="text-xs font-medium text-slate-500">
+            Showing {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, companies.length)} to{' '}
+            {Math.min(currentPage * ITEMS_PER_PAGE, companies.length)} of {companies.length} entries
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 transition hover:bg-slate-50 hover:text-slate-700 disabled:opacity-50"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <div className="flex items-center gap-1">
+              {[...Array(totalPages)].map((_, idx) => {
+                const pageNum = idx + 1;
+                // Only show current, first, last, and relative pages if many
+                if (
+                  totalPages > 5 &&
+                  pageNum !== 1 &&
+                  pageNum !== totalPages &&
+                  Math.abs(pageNum - currentPage) > 1
+                ) {
+                  if (Math.abs(pageNum - currentPage) === 2) {
+                    return <span key={pageNum} className="text-slate-300">...</span>;
+                  }
+                  return null;
+                }
+                return (
+                  <button
+                    key={pageNum}
+                    type="button"
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`h-8 w-8 rounded-lg text-xs font-bold transition ${
+                      currentPage === pageNum
+                        ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/30'
+                        : 'border border-slate-200 bg-white text-slate-500 hover:bg-slate-50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 transition hover:bg-slate-50 hover:text-slate-700 disabled:opacity-50"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      ) : (
         <div className="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
           Tidak ada company yang cocok dengan filter saat ini.
         </div>
-      ) : null}
+      )}
     </SurfaceCard>
   );
 }

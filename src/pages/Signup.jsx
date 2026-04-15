@@ -1,69 +1,43 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { loginSuccess } from '../store/action/authActions';
+import { Link, useNavigate } from 'react-router-dom';
 import { showSnackbar } from '../store/action/snackbar';
-import { userAuthService } from '../services';
 import AuthLayout from '../components/templates/AuthLayout';
 import { Eye, EyeOff } from 'lucide-react';
 
-function Login() {
+function Signup() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [email, setEmail] = useState('admin.monitoring@kospintar.id');
-  const [password, setPassword] = useState('admin123');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const from = location.state?.from?.pathname || '/dashboard';
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (submitting) return;
-
     setSubmitting(true);
 
-    try {
-      const result = await userAuthService.login({ email, password });
-      if (!result.token || !result.user) {
-        throw new Error('Respons login tidak lengkap dari server');
-      }
-
-      if (result.user.role !== 'admin') {
-        throw new Error('Akses monitoring hanya untuk role admin');
-      }
-
-      dispatch(loginSuccess({
-        user: result.user,
-        token: result.token,
-      }));
-
+    // Mimic API delay
+    setTimeout(() => {
       dispatch(showSnackbar({
-        title: 'Login berhasil',
-        message: `Selamat datang, ${result.user.name || 'Admin'}.`,
-        type: 'success',
+        title: 'Signup Request Sent',
+        message: 'Your registration request has been submitted for approval.',
+        type: 'info',
       }));
-
-      navigate(from, { replace: true });
-    } catch (error) {
-      dispatch(showSnackbar({
-        title: 'Login gagal',
-        message: error.message || 'Periksa email/password atau status verifikasi akun.',
-        type: 'error',
-      }));
-    } finally {
       setSubmitting(false);
-    }
+      navigate('/login');
+    }, 1500);
   };
 
   return (
     <AuthLayout
-      title="Sign In"
-      subtitle="Enter your email and password to sign in!"
-      footerText="Don't have an account?"
-      footerLink="/signup"
-      footerLinkText="Sign Up"
+      title="Sign Up"
+      subtitle="Enter your email and password to sign up!"
+      footerText="Already have an account?"
+      footerLink="/login"
+      footerLinkText="Sign In"
     >
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
@@ -87,6 +61,35 @@ function Login() {
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-4">
+             <div>
+               <label className="mb-2 block text-sm font-medium text-slate-900">
+                 First Name <span className="text-rose-500">*</span>
+               </label>
+               <input
+                 type="text"
+                 value={firstName}
+                 onChange={(e) => setFirstName(e.target.value)}
+                 placeholder="Enter first name"
+                 className="block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 transition-colors"
+                 required
+               />
+             </div>
+             <div>
+               <label className="mb-2 block text-sm font-medium text-slate-900">
+                 Last Name <span className="text-rose-500">*</span>
+               </label>
+               <input
+                 type="text"
+                 value={lastName}
+                 onChange={(e) => setLastName(e.target.value)}
+                 placeholder="Enter last name"
+                 className="block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 transition-colors"
+                 required
+               />
+             </div>
+          </div>
+
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-900">
               Email <span className="text-rose-500">*</span>
@@ -95,7 +98,7 @@ function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="info@gmail.com"
+              placeholder="Enter your email"
               className="block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 transition-colors"
               required
             />
@@ -124,14 +127,13 @@ function Login() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" />
-              <span className="text-sm text-slate-600">Keep me logged in</span>
+          <div>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" className="mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" required />
+              <span className="text-sm text-slate-600">
+                By creating an account means you agree to the <a href="#" className="font-semibold text-indigo-600 hover:underline">Terms and Conditions</a>, and our <a href="#" className="font-semibold text-indigo-600 hover:underline">Privacy Policy</a>
+              </span>
             </label>
-            <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-              Forgot password?
-            </a>
           </div>
 
           <button
@@ -139,7 +141,7 @@ function Login() {
             disabled={submitting}
             className="flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70 transition-all active:scale-[0.98]"
           >
-            {submitting ? 'Signing in...' : 'Sign in'}
+            {submitting ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
       </div>
@@ -147,5 +149,4 @@ function Login() {
   );
 }
 
-export default Login;
-
+export default Signup;
