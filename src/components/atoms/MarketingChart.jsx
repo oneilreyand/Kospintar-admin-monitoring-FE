@@ -8,14 +8,14 @@ const MarketingChart = ({ series, categories, height = 350 }) => {
       position: 'top',
       horizontalAlign: 'left',
     },
-    colors: ['#3C50E0', '#80CAEE'],
+    colors: ['#2DCC70', '#2C3E50'],
     chart: {
       fontFamily: 'Satoshi, sans-serif',
       height: height,
       type: 'area',
       dropShadow: {
         enabled: true,
-        color: '#6232121',
+        color: '#2C3E50',
         top: 10,
         blur: 4,
         left: 0,
@@ -65,7 +65,7 @@ const MarketingChart = ({ series, categories, height = 350 }) => {
     markers: {
       size: 4,
       colors: '#fff',
-      strokeColors: ['#3056D3', '#80CAEE'],
+      strokeColors: ['#2DCC70', '#2C3E50'],
       strokeWidth: 3,
       strokeOpacity: 0.9,
       strokeDashArray: 0,

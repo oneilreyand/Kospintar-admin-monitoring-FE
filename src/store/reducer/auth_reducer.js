@@ -2,6 +2,7 @@ const initialState = {
   authInitialized: false,
   isAuthenticated: false,
   token: null,
+  refreshToken: null,
   user: null,
 };
 
@@ -14,6 +15,7 @@ const authReducer = (state = initialState, action) => {
         isAuthenticated: action.payload.isAuthenticated,
         user: action.payload.user,
         token: action.payload.token,
+        refreshToken: action.payload.refreshToken || null,
       };
     case 'AUTH_LOGIN_SUCCESS':
       return {
@@ -22,6 +24,7 @@ const authReducer = (state = initialState, action) => {
         isAuthenticated: true,
         user: action.payload.user,
         token: action.payload.token,
+        refreshToken: action.payload.refreshToken || null,
       };
     case 'AUTH_LOGOUT':
       return {
@@ -29,6 +32,7 @@ const authReducer = (state = initialState, action) => {
         authInitialized: true,
         isAuthenticated: false,
         token: null,
+        refreshToken: null,
         user: null,
       };
     default:

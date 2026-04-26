@@ -1,22 +1,21 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { loginSuccess } from '../store/action/authActions';
 import { showSnackbar } from '../store/action/snackbar';
-import { userAuthService } from '../services';
 import AuthLayout from '../components/templates/AuthLayout';
 import { Eye, EyeOff } from 'lucide-react';
+import { userAuthService } from '../services';
 
 function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
   const [email, setEmail] = useState('admin.monitoring@kospintar.id');
-  const [password, setPassword] = useState('admin123');
+  const [password, setPassword] = useState('12345678');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const from = location.state?.from?.pathname || '/dashboard';
+  const redirectTarget = '/dashboard';
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -26,26 +25,38 @@ function Login() {
 
     try {
       const result = await userAuthService.login({ email, password });
-      if (!result.token || !result.user) {
-        throw new Error('Respons login tidak lengkap dari server');
+
+      if (result?.requiresTwoFactor) {
+        throw new Error('Akun ini memakai autentikasi 2 langkah. Flow 2FA belum tersedia di admin monitoring FE.');
       }
 
-      if (result.user.role !== 'admin') {
-        throw new Error('Akses monitoring hanya untuk role admin');
+      if (!result?.token || !result?.user) {
+        throw new Error('Respons login tidak lengkap. Silakan coba lagi.');
+      }
+
+      const role = String(result.user.role || '').toLowerCase();
+      if (role !== 'admin') {
+        throw new Error('Akses monitoring hanya untuk akun admin.');
       }
 
       dispatch(loginSuccess({
         user: result.user,
         token: result.token,
+        refreshToken: result.refreshToken,
       }));
 
       dispatch(showSnackbar({
         title: 'Login berhasil',
-        message: `Selamat datang, ${result.user.name || 'Admin'}.`,
+        message: `Selamat datang, ${result.user.name || result.user.email || 'Admin'}.`,
         type: 'success',
       }));
 
-      navigate(from, { replace: true });
+      navigate(redirectTarget, { replace: true });
+      setTimeout(() => {
+        if (window.location.pathname === '/login') {
+          window.location.replace(redirectTarget);
+        }
+      }, 0);
     } catch (error) {
       dispatch(showSnackbar({
         title: 'Login gagal',
@@ -61,31 +72,8 @@ function Login() {
     <AuthLayout
       title="Sign In"
       subtitle="Enter your email and password to sign in!"
-      footerText="Don't have an account?"
-      footerLink="/signup"
-      footerLinkText="Sign Up"
     >
       <div className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-          <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50">
-             <img src="https://www.google.com/favicon.ico" alt="Google" className="h-4 w-4" />
-             <span className="text-sm font-medium text-slate-700">Google</span>
-          </button>
-          <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50">
-             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-             </svg>
-             <span className="text-sm font-medium text-slate-700">X</span>
-          </button>
-        </div>
-
-        <div className="relative flex items-center justify-center py-2">
-           <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
-           </div>
-           <span className="relative bg-white px-4 text-xs font-medium uppercase text-slate-400">Or</span>
-        </div>
-
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-900">
@@ -96,7 +84,7 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="info@gmail.com"
-              className="block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 transition-colors"
+              className="block w-full rounded-lg border border-border bg-background px-4 py-3.5 text-navy placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
               required
             />
           </div>
@@ -111,7 +99,7 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 transition-colors"
+                className="block w-full rounded-lg border border-border bg-background px-4 py-3.5 text-navy placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
                 required
               />
               <button
@@ -125,19 +113,15 @@ function Login() {
           </div>
 
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" />
-              <span className="text-sm text-slate-600">Keep me logged in</span>
-            </label>
-            <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+            <Link to="/forgot-password" className="text-sm font-medium text-primary hover:text-brand-600">
               Forgot password?
-            </a>
+            </Link>
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70 transition-all active:scale-[0.98]"
+            className="flex w-full items-center justify-center rounded-lg bg-primary px-4 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-70 transition-all active:scale-[0.98]"
           >
             {submitting ? 'Signing in...' : 'Sign in'}
           </button>
@@ -148,4 +132,3 @@ function Login() {
 }
 
 export default Login;
-

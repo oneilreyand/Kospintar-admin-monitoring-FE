@@ -1,10 +1,10 @@
 const toneClasses = {
-  neutral: 'bg-slate-100 text-slate-600',
-  success: 'bg-emerald-50 text-emerald-600',
-  info: 'bg-sky-50 text-sky-600',
-  warning: 'bg-amber-50 text-amber-600',
-  danger: 'bg-rose-50 text-rose-600',
-  violet: 'bg-violet-50 text-violet-600',
+  neutral: 'border border-border bg-background text-text-secondary',
+  success: 'border border-success-100 bg-success-50 text-success-700',
+  info: 'border border-navy/15 bg-navy/10 text-navy',
+  warning: 'border border-warning/30 bg-warning/10 text-warning-700',
+  danger: 'border border-danger/30 bg-danger/10 text-error-700',
+  violet: 'border border-promo/30 bg-promo/10 text-promo',
 };
 
 function StatusBadge({ children, tone = 'neutral' }) {

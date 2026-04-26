@@ -7,11 +7,13 @@ import {
   Layers,
   LayoutDashboard,
   Users,
+  Activity,
   X,
 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MenuSection from './MenuSection';
+import nextLogo from '../../assets/next-level-ic.svg';
 
 function Sidebar({ isOpen, closeSidebar }) {
   const navigate = useNavigate();
@@ -32,9 +34,9 @@ function Sidebar({ isOpen, closeSidebar }) {
         icon: <Building2 size={20} />,
       },
       {
-        label: 'Tenants',
+        label: 'Tenant Activity',
         path: '/tenants',
-        icon: <Users size={20} />,
+        icon: <Activity size={20} />,
       },
     ],
     [],
@@ -79,7 +81,7 @@ function Sidebar({ isOpen, closeSidebar }) {
 
       <aside
         className={`
-          fixed md:sticky top-0 left-0 h-screen bg-sidebar-bg dark:bg-dark-sidebar text-sidebar-text dark:text-dark-text shadow-md border-r border-slate-300/30 flex shrink-0 flex-col z-50 md:self-start
+          fixed md:sticky top-0 left-0 h-screen bg-sidebar-bg dark:bg-dark-sidebar text-sidebar-text dark:text-dark-text shadow-[0_10px_28px_rgba(44,62,80,0.06)] border-r border-border flex shrink-0 flex-col z-50 md:self-start
           transform transition-all duration-500 ease-out
           ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64'}
           md:translate-x-0 md:w-16 md:hover:w-64
@@ -89,11 +91,9 @@ function Sidebar({ isOpen, closeSidebar }) {
         <div className="flex flex-col justify-start space-y-4 p-5">
           <div className="flex items-center justify-between space-x-3 md:justify-start">
             <div className="flex min-w-0 items-center space-x-3">
-              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sub-menu-active font-bold tracking-[0.06em] text-white">
-                KP
-              </span>
+              <img src={nextLogo} alt="Kospintar" className="h-10 w-auto shrink-0" />
               <span className="min-w-full whitespace-nowrap text-xl font-bold text-sidebar-text transition-opacity duration-300 ease-out dark:text-dark-text md:opacity-0 md:group-hover:opacity-100">
-                Kospintar Admin
+                Lulu
               </span>
             </div>
 

@@ -1,15 +1,16 @@
 import SurfaceCard from '../atoms/SurfaceCard';
 import PagePerformanceRow from '../molecules/PagePerformanceRow';
+import SectionHeading from '../molecules/SectionHeading';
 
 function TopPagesCard({ pages }) {
   return (
     <SurfaceCard className="p-6">
-      <div>
-        <p className="text-sm font-semibold text-slate-900">Top Landing Pages</p>
-        <p className="mt-1 text-sm text-slate-500">Halaman dengan traffic dan intent tertinggi.</p>
-      </div>
+      <SectionHeading
+        title="Top Landing Pages"
+        subtitle="Halaman dengan traffic dan intent tertinggi."
+      />
 
-      <div className="mt-6 grid gap-3 bg-slate-50/80 p-3 rounded-[24px]">
+      <div className="mt-6 grid gap-3 rounded-[24px] bg-background p-3">
         {pages.map((page) => (
           <PagePerformanceRow key={page.path} page={page} />
         ))}

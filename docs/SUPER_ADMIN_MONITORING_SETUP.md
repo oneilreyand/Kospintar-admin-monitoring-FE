@@ -35,14 +35,14 @@ Gunakan akun:
 
 - Email: `admin.monitoring@kospintar.id`
 - Alternatif: `admin@kospintar.id`
-- Password: `admin123`
+- Password: `12345678`
 
 Jika `admin@kospintar.id` sudah ada di DB lama dan masih gagal login, jalankan patch cepat ini:
 
 ```sql
 UPDATE "Users"
 SET
-  "password" = '$2a$10$FSGH8UwxDbYqpbeMRofZA.C9n6vMOkH60pQdPpwwuGOacNKg3HP9O',
+  "password" = crypt('12345678', gen_salt('bf', 10)),
   "role" = 'admin',
   "isEmailVerified" = true,
   "updatedAt" = NOW()

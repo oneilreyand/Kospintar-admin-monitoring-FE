@@ -33,8 +33,8 @@ function CompanyDetailPanel({ company }) {
   if (!company) {
     return (
       <SurfaceCard className="p-5">
-        <p className="text-lg font-semibold text-slate-900">Company Overview</p>
-        <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+        <p className="text-lg font-semibold text-navy">Company Overview</p>
+        <div className="mt-4 rounded-2xl border border-dashed border-border bg-background px-4 py-8 text-center text-sm text-text-secondary">
           Pilih company dari daftar untuk melihat detail operasional.
         </div>
       </SurfaceCard>
@@ -71,19 +71,27 @@ function CompanyDetailPanel({ company }) {
   const occupancyRate = company.occupancyRate || 0;
   const avgRentPerTenant = company.activeTenants > 0 ? company.monthlyRevenue / company.activeTenants : 0;
   const avgRoomsPerBranch = company.branchCount > 0 ? company.roomCount / company.branchCount : 0;
+  const overdueBillingCount = Number(company.metrics?.overdueBillingCount || 0);
+  const unpaidBillingAmount = Number(company.metrics?.unpaidBillingAmount || 0);
+  const expiringContracts = Number(company.metrics?.expiringContracts || 0);
+  const maintenanceRooms = Number(company.maintenanceRooms || 0);
+  const maintenanceRate = Number(company.metrics?.maintenanceRate || 0);
 
   return (
     <SurfaceCard className="p-5">
       {/* Header Section */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xl font-bold tracking-tight text-slate-900">{company.name}</p>
-          <div className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
-            <MapPin size={14} className="text-slate-400" />
+          <p className="text-xl font-bold tracking-tight text-navy">{company.name}</p>
+          <div className="mt-1 flex items-center gap-1.5 text-sm text-text-secondary">
+            <MapPin size={14} className="text-text-secondary" />
             <span>{company.address}</span>
           </div>
         </div>
-        <StatusBadge tone={company.lifecycle.tone}>{company.lifecycle.label}</StatusBadge>
+        <div className="flex flex-col items-end gap-2">
+          <StatusBadge tone={company.lifecycle.tone}>{company.lifecycle.label}</StatusBadge>
+          <StatusBadge tone={company.health.tone}>{company.health.label} ({company.health.score})</StatusBadge>
+        </div>
       </div>
 
       {/* Primary Stats Grid */}
@@ -91,12 +99,12 @@ function CompanyDetailPanel({ company }) {
         {summaryItems.map((item) => {
           const Icon = item.icon;
           return (
-            <div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50/60 p-3">
-              <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white text-slate-600 shadow-sm border border-slate-100">
+            <div key={item.id} className="rounded-2xl border border-border bg-background p-3">
+              <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-white text-navy shadow-sm">
                 <Icon size={17} />
               </div>
-              <p className="mt-2 text-[10px] uppercase tracking-[0.12em] font-bold text-slate-400">{item.label}</p>
-              <p className="mt-1 text-sm font-bold text-slate-900">{item.value}</p>
+              <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary">{item.label}</p>
+              <p className="mt-1 text-sm font-bold text-navy">{item.value}</p>
             </div>
           );
         })}
@@ -106,28 +114,28 @@ function CompanyDetailPanel({ company }) {
       <div className="mt-6 space-y-6">
         
         {/* Occupancy Analytics */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+        <div className="rounded-2xl border border-border bg-white p-5">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold text-slate-900">Performa Okupansi</h4>
-            <span className={`text-sm font-bold ${occupancyRate > 80 ? 'text-emerald-600' : occupancyRate > 50 ? 'text-indigo-600' : 'text-rose-600'}`}>
+            <h4 className="text-sm font-bold text-navy">Performa Okupansi</h4>
+            <span className={`text-sm font-bold ${occupancyRate > 80 ? 'text-success-700' : occupancyRate > 50 ? 'text-primary' : 'text-error-700'}`}>
               {occupancyRate}%
             </span>
           </div>
-          <div className="mt-3 h-3 w-full rounded-full bg-slate-100 p-0.5">
+          <div className="mt-3 h-3 w-full rounded-full bg-background p-0.5">
             <div
               className={`h-2 rounded-full transition-all duration-1000 ${
-                occupancyRate > 80 ? 'bg-emerald-500' : occupancyRate > 50 ? 'bg-indigo-500' : 'bg-rose-500'
+                occupancyRate > 80 ? 'bg-success-500' : occupancyRate > 50 ? 'bg-primary' : 'bg-danger'
               }`}
               style={{ width: `${Math.min(occupancyRate, 100)}%` }}
             />
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-4 text-xs">
             <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-slate-300" />
-              <span className="text-slate-500">{formatNumber(company.occupiedRooms)} Kamar Terisi</span>
+              <div className="h-2 w-2 rounded-full bg-border" />
+              <span className="text-text-secondary">{formatNumber(company.occupiedRooms)} Kamar Terisi</span>
             </div>
-            <div className="flex items-center gap-2 font-medium text-slate-700">
-              <TrendingUp size={14} className="text-indigo-500" />
+            <div className="flex items-center gap-2 font-medium text-navy">
+              <TrendingUp size={14} className="text-primary" />
               <span>Target: 90%</span>
             </div>
           </div>
@@ -135,23 +143,23 @@ function CompanyDetailPanel({ company }) {
 
         {/* Financial & Portfolio Insights */}
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-slate-100 bg-slate-50/40 p-4">
-            <div className="flex items-center gap-2 text-slate-500 mb-2">
+          <div className="rounded-2xl border border-border bg-background p-4">
+            <div className="mb-2 flex items-center gap-2 text-text-secondary">
               <CreditCard size={14} />
               <span className="text-xs font-bold uppercase tracking-wider">Revenue Insight</span>
             </div>
-            <p className="text-lg font-bold text-slate-900">{formatCurrency(company.monthlyRevenue)}</p>
-            <p className="text-[10px] text-slate-500 mt-1 italic">
+            <p className="text-lg font-bold text-navy">{formatCurrency(company.monthlyRevenue)}</p>
+            <p className="mt-1 text-[10px] italic text-text-secondary">
               Est. ARPU: {formatCurrency(avgRentPerTenant)}/tenant
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-100 bg-slate-50/40 p-4">
-            <div className="flex items-center gap-2 text-slate-500 mb-2">
+          <div className="rounded-2xl border border-border bg-background p-4">
+            <div className="mb-2 flex items-center gap-2 text-text-secondary">
               <Building2 size={14} />
               <span className="text-xs font-bold uppercase tracking-wider">Portfolio Density</span>
             </div>
-            <p className="text-lg font-bold text-slate-900">{avgRoomsPerBranch.toFixed(1)}</p>
-            <p className="text-[10px] text-slate-500 mt-1 italic">
+            <p className="text-lg font-bold text-navy">{avgRoomsPerBranch.toFixed(1)}</p>
+            <p className="mt-1 text-[10px] italic text-text-secondary">
               Kamar per cabang (rata-rata)
             </p>
           </div>
@@ -159,25 +167,25 @@ function CompanyDetailPanel({ company }) {
 
         {/* Risk Assessment */}
         <div className={`rounded-2xl border p-4 ${
-          company.riskPriority === 'High' ? 'bg-rose-50 border-rose-100' : 
-          company.riskPriority === 'Medium' ? 'bg-orange-50 border-orange-100' : 
-          'bg-emerald-50 border-emerald-100'
+          company.riskPriority === 'High' ? 'border-danger/20 bg-danger/10' : 
+          company.riskPriority === 'Medium' ? 'border-warning/20 bg-warning/10' : 
+          'border-success-100 bg-success-50'
         }`}>
           <div className="flex items-center gap-2">
             <AlertTriangle size={16} className={
-              company.riskPriority === 'High' ? 'text-rose-500' : 
-              company.riskPriority === 'Medium' ? 'text-orange-500' : 
-              'text-emerald-500'
+              company.riskPriority === 'High' ? 'text-danger' : 
+              company.riskPriority === 'Medium' ? 'text-warning' : 
+              'text-success-600'
             } />
             <h4 className={`text-xs font-bold uppercase tracking-widest ${
-              company.riskPriority === 'High' ? 'text-rose-700' : 
-              company.riskPriority === 'Medium' ? 'text-orange-700' : 
-              'text-emerald-700'
+              company.riskPriority === 'High' ? 'text-error-700' : 
+              company.riskPriority === 'Medium' ? 'text-warning-700' : 
+              'text-success-700'
             }`}>
               Analisis Risiko: {company.riskPriority} Priority
             </h4>
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-slate-600">
+          <p className="mt-2 text-xs leading-relaxed text-navy">
             {company.riskPriority === 'High' 
               ? `Perusahaan ini memiliki skor risiko tinggi (${company.riskScore}). Prioritaskan kontak untuk mencegah churn. Fokus pada peningkatan okupansi yang saat ini berada di bawah 60%.`
               : company.riskPriority === 'Medium'
@@ -187,28 +195,98 @@ function CompanyDetailPanel({ company }) {
           </p>
         </div>
 
+        <div className="rounded-2xl border border-border bg-white p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h4 className="text-sm font-bold text-navy">Health Monitoring</h4>
+              <p className="mt-1 text-xs text-text-secondary">
+                Ringkasan kesehatan operasional dan revenue risk untuk company ini.
+              </p>
+            </div>
+            <StatusBadge tone={company.health.tone}>
+              {company.health.label} • Score {company.health.score}
+            </StatusBadge>
+          </div>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-border bg-background p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary">Tagihan Overdue</p>
+              <p className="mt-1 text-lg font-bold text-navy">{formatNumber(overdueBillingCount)}</p>
+              <p className="mt-1 text-[10px] text-text-secondary">Outstanding: {formatCurrency(unpaidBillingAmount)}</p>
+            </div>
+            <div className="rounded-2xl border border-border bg-background p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary">Kontrak Akan Habis</p>
+              <p className="mt-1 text-lg font-bold text-navy">{formatNumber(expiringContracts)}</p>
+              <p className="mt-1 text-[10px] text-text-secondary">Dalam 30 hari ke depan</p>
+            </div>
+            <div className="rounded-2xl border border-border bg-background p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary">Kamar Maintenance</p>
+              <p className="mt-1 text-lg font-bold text-navy">{formatNumber(maintenanceRooms)}</p>
+              <p className="mt-1 text-[10px] text-text-secondary">{maintenanceRate}% dari total kamar</p>
+            </div>
+            <div className="rounded-2xl border border-border bg-background p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary">Aktivitas Owner Terakhir</p>
+              <p className="mt-1 text-lg font-bold text-navy">{formatDate(company.lastActivityAt)}</p>
+              <p className="mt-1 text-[10px] text-text-secondary">
+                {company.health.staleDays === null ? 'Belum ada aktivitas tercatat' : `${company.health.staleDays} hari lalu`}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary">Alasan Skor</p>
+              <div className="mt-2 grid gap-2">
+                {(company.health.reasons || []).length ? company.health.reasons.map((reason) => (
+                  <div key={reason} className="rounded-xl border border-border bg-background px-3 py-2 text-xs text-navy">
+                    {reason}
+                  </div>
+                )) : (
+                  <div className="rounded-xl border border-border bg-background px-3 py-2 text-xs text-text-secondary">
+                    Belum ada isu utama yang terdeteksi.
+                  </div>
+                )}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary">Recommended Actions</p>
+              <div className="mt-2 grid gap-2">
+                {(company.health.recommendations || []).length ? company.health.recommendations.map((item) => (
+                  <div key={item} className="rounded-xl border border-primary/20 bg-primary/10 px-3 py-2 text-xs text-navy">
+                    {item}
+                  </div>
+                )) : (
+                  <div className="rounded-xl border border-border bg-background px-3 py-2 text-xs text-text-secondary">
+                    Kondisi relatif sehat, belum ada tindakan prioritas tinggi.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Improved Branch Detail List */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-bold text-slate-900">Performa Per Unit</p>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{company.branches?.length} Cabang</span>
+            <p className="text-sm font-bold text-navy">Performa Per Unit</p>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{company.branches?.length} Cabang</span>
           </div>
           <div className="grid gap-3">
             {company.branches?.map((branch) => (
               <div
                 key={branch.id}
-                className="group relative rounded-2xl border border-slate-200 bg-white p-4 transition-all hover:border-brand-200 hover:shadow-md"
+                className="group relative rounded-2xl border border-border bg-white p-4 transition-all hover:border-primary/30 hover:shadow-md"
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-sm font-bold text-slate-900 group-hover:text-brand-600 transition-colors">{branch.name}</p>
-                    <p className="mt-0.5 text-[10px] text-slate-400 line-clamp-1">{branch.address}</p>
+                    <p className="text-sm font-bold text-navy transition-colors group-hover:text-primary">{branch.name}</p>
+                    <p className="mt-0.5 line-clamp-1 text-[10px] text-text-secondary">{branch.address}</p>
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <span className={`text-[10px] font-bold ${
-                      branch.occupancyRate > 80 ? 'text-emerald-600' : 
-                      branch.occupancyRate > 50 ? 'text-indigo-600' : 
-                      'text-rose-600'
+                      branch.occupancyRate > 80 ? 'text-success-700' : 
+                      branch.occupancyRate > 50 ? 'text-primary' : 
+                      'text-error-700'
                     }`}>
                       {branch.occupancyRate}% Occupied
                     </span>
@@ -217,29 +295,29 @@ function CompanyDetailPanel({ company }) {
                 
                 <div className="mt-3 flex items-center justify-between gap-4">
                   <div className="flex-grow">
-                    <div className="h-1.5 w-full rounded-full bg-slate-100">
+                    <div className="h-1.5 w-full rounded-full bg-background">
                       <div
                         className={`h-1.5 rounded-full transition-all duration-1000 ${
-                          branch.occupancyRate > 80 ? 'bg-emerald-500' : 
-                          branch.occupancyRate > 50 ? 'bg-indigo-500' : 
-                          'bg-rose-500'
+                          branch.occupancyRate > 80 ? 'bg-success-500' : 
+                          branch.occupancyRate > 50 ? 'bg-primary' : 
+                          'bg-danger'
                         }`}
                         style={{ width: `${Math.min(branch.occupancyRate, 100)}%` }}
                       />
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 whitespace-nowrap">
-                    <Users size={10} className="text-slate-400" />
+                  <div className="flex items-center gap-1.5 whitespace-nowrap text-[10px] font-bold text-text-secondary">
+                    <Users size={10} className="text-text-secondary" />
                     <span>{branch.activeTenants}/{branch.totalRooms}</span>
                   </div>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between border-t border-slate-50 pt-3">
-                  <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
-                    <ChevronRight size={10} className="text-slate-300" />
+                <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+                  <div className="flex items-center gap-1 text-[10px] font-medium text-text-secondary">
+                    <ChevronRight size={10} className="text-border" />
                     <span>Rev: {formatCurrency(branch.currentMonthlyRevenue)}</span>
                   </div>
-                  <button className="text-[10px] font-bold text-brand-500 hover:text-brand-600">Detail &rsaquo;</button>
+                  <button className="text-[10px] font-bold text-primary hover:text-brand-600">Detail &rsaquo;</button>
                 </div>
               </div>
             ))}

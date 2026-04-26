@@ -15,8 +15,8 @@ const ComponentsFeedbackSection = () => {
   message="Your profile has been updated successfully." 
 />`;
 
-  const badgeCode = `<Badge color="blue">Primary</Badge>
-<Badge color="cyan" variant="outline">Success</Badge>
+  const badgeCode = `<Badge color="green">Primary</Badge>
+<Badge color="green" variant="outline">Success</Badge>
 <Badge color="yellow" variant="light">Warning</Badge>`;
 
   const modalCode = `<Modal 
@@ -27,14 +27,14 @@ const ComponentsFeedbackSection = () => {
   <p>Modal content goes here...</p>
 </Modal>`;
 
-  const progressCode = `<ProgressBar value={75} tone="bg-indigo-600" />
+  const progressCode = `<ProgressBar value={75} tone="bg-primary" />
 <Spinner size="w-8 h-8" />`;
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-900">Feedback & Status</h2>
-        <p className="mt-2 text-sm text-slate-500">Components for status, notifications, and progress tracking.</p>
+      <section className="rounded-2xl border border-border bg-white px-6 py-6 shadow-sm">
+        <h2 className="text-xl font-bold text-navy">Feedback & Status</h2>
+        <p className="mt-2 text-sm text-text-secondary">Components for status, notifications, and progress tracking.</p>
       </section>
 
       <ComponentShowcaseItem
@@ -58,16 +58,16 @@ const ComponentsFeedbackSection = () => {
         preview={(
           <div className="flex flex-wrap gap-4">
             <div className="space-y-2">
-              <p className="text-[10px] font-bold uppercase text-slate-400">Solid</p>
-              <div className="flex gap-2"><Badge color="blue">Blue</Badge><Badge color="cyan">Green</Badge><Badge color="red">Red</Badge></div>
+              <p className="text-[10px] font-bold uppercase text-text-secondary">Solid</p>
+              <div className="flex gap-2"><Badge color="green">Primary</Badge><Badge color="cyan">Success</Badge><Badge color="red">Danger</Badge></div>
             </div>
             <div className="space-y-2">
-              <p className="text-[10px] font-bold uppercase text-slate-400">Outline</p>
-              <div className="flex gap-2"><Badge color="blue" variant="outline">Blue</Badge><Badge color="cyan" variant="outline">Green</Badge><Badge color="red" variant="outline">Red</Badge></div>
+              <p className="text-[10px] font-bold uppercase text-text-secondary">Outline</p>
+              <div className="flex gap-2"><Badge color="green" variant="outline">Primary</Badge><Badge color="cyan" variant="outline">Success</Badge><Badge color="red" variant="outline">Danger</Badge></div>
             </div>
             <div className="space-y-2">
-              <p className="text-[10px] font-bold uppercase text-slate-400">Light</p>
-              <div className="flex gap-2"><Badge color="blue" variant="light">Blue</Badge><Badge color="cyan" variant="light">Green</Badge><Badge color="red" variant="light">Red</Badge></div>
+              <p className="text-[10px] font-bold uppercase text-text-secondary">Light</p>
+              <div className="flex gap-2"><Badge color="green" variant="light">Primary</Badge><Badge color="cyan" variant="light">Success</Badge><Badge color="red" variant="light">Danger</Badge></div>
             </div>
           </div>
         )}
@@ -80,12 +80,12 @@ const ComponentsFeedbackSection = () => {
         preview={(
           <div className="grid gap-8 lg:grid-cols-2 w-full">
             <div className="space-y-4">
-              <ProgressBar value={75} tone="bg-indigo-600" />
+              <ProgressBar value={75} tone="bg-primary" />
               <ProgressBar value={40} tone="bg-emerald-500" />
             </div>
             <div className="flex items-center gap-6">
               <Spinner />
-              <div className="text-indigo-600"><Spinner /></div>
+              <div className="text-primary"><Spinner /></div>
               <div className="scale-150"><Spinner /></div>
             </div>
           </div>
@@ -100,7 +100,7 @@ const ComponentsFeedbackSection = () => {
           <div className="flex flex-wrap gap-4">
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-500 transition-all active:scale-95"
+              className="rounded-lg bg-primary px-6 py-2.5 text-sm font-bold text-white transition-all hover:bg-brand-600 active:scale-95"
             >
               Open Modal Dialog
             </button>
@@ -120,15 +120,15 @@ const ComponentsFeedbackSection = () => {
         onClose={() => setIsModalOpen(false)}
         title="TailAdmin Modal"
         footer={(
-          <button 
-            onClick={() => setIsModalOpen(false)}
-            className="rounded-lg bg-indigo-600 px-6 py-2 text-sm font-bold text-white hover:bg-indigo-500"
+            <button 
+              onClick={() => setIsModalOpen(false)}
+            className="rounded-lg bg-primary px-6 py-2 text-sm font-bold text-white hover:bg-brand-600"
           >
             Got it, thanks!
           </button>
         )}
       >
-        <p className="text-slate-600">
+        <p className="text-navy">
           This is a replicated modal component. It supports custom footers, headers, and backdrop blurring.
         </p>
       </Modal>
@@ -137,4 +137,3 @@ const ComponentsFeedbackSection = () => {
 };
 
 export default ComponentsFeedbackSection;
-

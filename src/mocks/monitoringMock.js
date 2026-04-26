@@ -55,8 +55,8 @@ const mockMonitoringData = {
       visitors: '58.2K',
       conversion: 'CVR 6.8%',
       progress: 78,
-      dotClass: 'bg-sky-500',
-      barClass: 'bg-sky-500',
+      dotClass: 'bg-primary',
+      barClass: 'bg-primary',
     },
     {
       name: 'Organic Search',
@@ -73,8 +73,8 @@ const mockMonitoringData = {
       visitors: '18.4K',
       conversion: 'CVR 7.4%',
       progress: 47,
-      dotClass: 'bg-violet-500',
-      barClass: 'bg-violet-500',
+      dotClass: 'bg-promo',
+      barClass: 'bg-promo',
     },
     {
       name: 'Lifecycle CRM',
@@ -111,7 +111,7 @@ const mockMonitoringData = {
       spend: 'Rp 18 jt',
       leads: '442',
       roi: '5.2x',
-      roiTone: 'violet',
+      roiTone: 'success',
       cvr: '8.8%',
     },
     {
@@ -130,14 +130,14 @@ const mockMonitoringData = {
       caption: 'Target 8.500 leads',
       value: '7.942',
       progress: 93,
-      barClass: 'bg-sky-500',
+      barClass: 'bg-primary',
     },
     {
       label: 'Owner Signup Conversion',
       caption: 'Target 6.2%',
       value: '5.8%',
       progress: 82,
-      barClass: 'bg-violet-500',
+      barClass: 'bg-promo',
     },
     {
       label: 'CAC Efficiency',
@@ -159,7 +159,7 @@ const mockMonitoringData = {
       path: '/owner/demo-request',
       sessions: '21.2K sessions',
       bounce: 'Bounce 34%',
-      bounceTone: 'info',
+      bounceTone: 'success',
       conversion: '5.9% CVR',
     },
     {
@@ -183,7 +183,7 @@ const mockMonitoringData = {
       description: 'Versi image carousel baru dipush ke Meta Ads dan mulai serve 12 menit lalu.',
       time: '12m ago',
       tone: 'info',
-      dotClass: 'bg-sky-500',
+      dotClass: 'bg-primary',
     },
     {
       title: 'Attribution spike from referral partner',
@@ -203,8 +203,8 @@ const mockMonitoringData = {
       title: 'CRM reactivation flow published',
       description: 'Flow WA + email untuk lead dorman sekarang aktif di seluruh segment owner.',
       time: '2h ago',
-      tone: 'violet',
-      dotClass: 'bg-violet-500',
+      tone: 'success',
+      dotClass: 'bg-promo',
     },
   ],
   watchlist: [

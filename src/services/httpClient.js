@@ -1,3 +1,5 @@
+import authService from './authService';
+
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002').replace(/\/+$/, '');
 
 const buildUrl = (path, query) => {
@@ -48,6 +50,13 @@ const request = async (method, path, options = {}) => {
   const payload = await parseResponse(response);
 
   if (!response.ok) {
+    if (response.status === 401) {
+      authService.clearSession();
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.replace('/login');
+      }
+    }
+
     const message = (payload && payload.error) || (payload && payload.message) || `Request gagal (${response.status})`;
     const error = new Error(message);
     error.status = response.status;

@@ -4,19 +4,30 @@
 
 :root {
   color-scheme: light;
-  --bg: #f9fafb;
+  --color-dark-bg: #1e1e2e;
+  --color-dark-sidebar: #252836;
+  --color-dark-text: #e0e0e0;
+  --ui-primary: #2dcc70;
+  --ui-navy: #2c3e50;
+  --ui-danger: #e74c3c;
+  --ui-warning: #f39c12;
+  --ui-promo: #e91e63;
+  --ui-bg: #f8f9fa;
+  --ui-border: #e0e0e0;
+  --ui-text-secondary: #7f8c8d;
+  --bg: #f8f9fa;
   --surface: #ffffff;
   --surface-strong: #ffffff;
-  --ink: #101828;
-  --muted: #667085;
-  --line: #e4e7ec;
-  --brand: #465fff;
-  --brand-soft: #ecf3ff;
-  --warn: #f79009;
-  --warn-soft: #fffaeb;
-  --risk: #f04438;
-  --risk-soft: #fef3f2;
-  --shadow: 0px 1px 3px 0px rgba(16, 24, 40, 0.1), 0px 1px 2px 0px rgba(16, 24, 40, 0.06);
+  --ink: #2c3e50;
+  --muted: #7f8c8d;
+  --line: #e0e0e0;
+  --brand: #2dcc70;
+  --brand-soft: #ebfaef;
+  --warn: #f39c12;
+  --warn-soft: #fff7eb;
+  --risk: #e74c3c;
+  --risk-soft: #fff2f0;
+  --shadow: 0 10px 28px rgba(44, 62, 80, 0.06);
 }
 
 * {
@@ -31,8 +42,17 @@ body {
   margin: 0;
   font-family: "Public Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--ink);
-  background: linear-gradient(180deg, #f9fafb 0%, #f2f4f7 100%);
+  background: var(--ui-bg);
   min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--ui-navy);
 }
 
 a {
@@ -44,18 +64,27 @@ a {
   min-height: 100vh;
 }
 
+.dark body {
+  background: var(--color-dark-bg);
+  color: var(--color-dark-text);
+}
+
+.dark .sidebar-panel {
+  background: var(--color-dark-sidebar);
+}
+
 .menu-item-inactive {
-  color: #344054;
+  color: var(--ui-navy);
 }
 
 .menu-item-inactive:hover {
-  background-color: #f2f4f7;
-  color: #344054;
+  background-color: #edf2ef;
+  color: var(--ui-navy);
 }
 
 .menu-item-active {
-  background-color: #ecf3ff;
-  color: #465fff;
+  background-color: #ebfaef;
+  color: var(--ui-primary);
 }
 
 .menu-item-icon-inactive {
@@ -67,7 +96,7 @@ a {
 }
 
 .menu-item-icon-active {
-  color: #465fff;
+  color: var(--ui-primary);
 }
 
 .layout-shell {
@@ -98,7 +127,7 @@ a {
 
 .sidebar-link:hover,
 .sidebar-link.active {
-  background: rgba(70, 95, 255, 0.08);
+  background: rgba(45, 204, 112, 0.12);
   transform: translateX(3px);
 }
 
@@ -106,7 +135,7 @@ a {
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255, 250, 241, 0.95), rgba(255, 255, 255, 0.78));
+  background: linear-gradient(180deg, rgba(235, 250, 239, 0.95), rgba(255, 255, 255, 0.88));
 }
 
 .sidebar-box p {
@@ -124,7 +153,7 @@ a {
 .layout-header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 100;
   padding: 20px 28px 0;
 }
 
@@ -243,19 +272,19 @@ table {
   gap: 14px;
   padding: 16px;
   border-radius: 18px;
-  background: rgba(239, 246, 255, 0.96);
+  background: rgba(44, 62, 80, 0.1);
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
   animation: snackbar-slide-in 260ms cubic-bezier(0.2, 0.78, 0.2, 1) both;
 }
 
 .snackbar-card strong {
-  color: #1e3a8a;
+  color: #2c3e50;
 }
 
 .snackbar-card p {
   margin-top: 4px;
-  color: #1e40af;
+  color: #2c3e50;
 }
 
 .snackbar-card.is-exiting {
@@ -263,42 +292,42 @@ table {
 }
 
 .snackbar-card.success {
-  border-color: rgba(5, 150, 105, 0.34);
-  background: rgba(236, 253, 245, 0.96);
+  border-color: rgba(113, 221, 55, 0.5);
+  background: rgba(238, 251, 229, 0.98);
 }
 
 .snackbar-card.success strong {
-  color: #065f46;
+  color: #3f821c;
 }
 
 .snackbar-card.success p {
-  color: #047857;
+  color: #4da51e;
 }
 
 .snackbar-card.error {
-  border-color: rgba(225, 29, 72, 0.34);
-  background: rgba(255, 241, 242, 0.98);
+  border-color: rgba(231, 76, 60, 0.45);
+  background: rgba(255, 242, 240, 0.98);
 }
 
 .snackbar-card.error strong {
-  color: #9f1239;
+  color: #ae3529;
 }
 
 .snackbar-card.error p {
-  color: #be123c;
+  color: #ce3f31;
 }
 
 .snackbar-card.warning {
-  border-color: rgba(217, 119, 6, 0.34);
-  background: rgba(255, 251, 235, 0.98);
+  border-color: rgba(243, 156, 18, 0.45);
+  background: rgba(255, 247, 235, 0.98);
 }
 
 .snackbar-card.warning strong {
-  color: #92400e;
+  color: #b5720d;
 }
 
 .snackbar-card.warning p {
-  color: #b45309;
+  color: #d98a10;
 }
 
 .snackbar-card button {

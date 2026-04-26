@@ -116,6 +116,80 @@ const mapRiskPriority = (riskScore) => {
   return 'Low';
 };
 
+const deriveHealth = ({
+  health,
+  occupancyRate,
+  maintenanceRate,
+  overdueBillingCount,
+  expiringContracts,
+  lifecycle,
+}) => {
+  if (health?.status) {
+    return {
+      score: Number(health.score || 0),
+      status: health.status,
+      tone: health.tone || (health.status === 'healthy' ? 'success' : health.status === 'warning' ? 'warning' : 'danger'),
+      label: health.label || (health.status === 'healthy' ? 'Healthy' : health.status === 'warning' ? 'Warning' : 'Critical'),
+      reasons: Array.isArray(health.reasons) ? health.reasons : [],
+      recommendations: Array.isArray(health.recommendations) ? health.recommendations : [],
+      staleDays: health.staleDays ?? null,
+    };
+  }
+
+  let score = 84;
+  const reasons = [];
+  const recommendations = [];
+
+  if (lifecycle === 'churn') {
+    score -= 30;
+    reasons.push('Langganan tidak aktif atau sudah churn.');
+    recommendations.push('Lakukan follow up reaktivasi subscription.');
+  } else if (lifecycle === 'pending_payment') {
+    score -= 18;
+    reasons.push('Subscription sedang pending payment.');
+    recommendations.push('Konfirmasi pembayaran langganan.');
+  }
+
+  if (occupancyRate < 40) {
+    score -= 18;
+    reasons.push(`Okupansi rendah (${occupancyRate}%).`);
+    recommendations.push('Dorong promo untuk meningkatkan okupansi.');
+  } else if (occupancyRate < 65) {
+    score -= 10;
+    reasons.push(`Okupansi perlu perhatian (${occupancyRate}%).`);
+  }
+
+  if (maintenanceRate >= 15) {
+    score -= 12;
+    reasons.push(`Kamar maintenance tinggi (${maintenanceRate}%).`);
+    recommendations.push('Prioritaskan perbaikan kamar maintenance.');
+  }
+
+  if (overdueBillingCount > 0) {
+    score -= Math.min(12, overdueBillingCount * 2);
+    reasons.push(`${overdueBillingCount} tagihan overdue masih terbuka.`);
+    recommendations.push('Lakukan reminder tenant atas tagihan overdue.');
+  }
+
+  if (expiringContracts > 0) {
+    score -= Math.min(8, expiringContracts);
+    reasons.push(`${expiringContracts} kontrak akan berakhir dalam 30 hari.`);
+  }
+
+  const normalizedScore = clamp(Math.round(score), 0, 100);
+  const status = normalizedScore >= 80 ? 'healthy' : normalizedScore >= 60 ? 'warning' : 'critical';
+
+  return {
+    score: normalizedScore,
+    status,
+    tone: status === 'healthy' ? 'success' : status === 'warning' ? 'warning' : 'danger',
+    label: status === 'healthy' ? 'Healthy' : status === 'warning' ? 'Warning' : 'Critical',
+    reasons: reasons.slice(0, 5),
+    recommendations: [...new Set(recommendations)].slice(0, 4),
+    staleDays: null,
+  };
+};
+
 const toMapPoint = (branch, companyName, companyId) => {
   const latitude = normalizeCoordinate(branch.latitude);
   const longitude = normalizeCoordinate(branch.longitude);
@@ -171,10 +245,14 @@ const composeSnapshot = ({ companies, boardingHouses, summaryByHouse, subscripti
         longitude: normalizeCoordinate(house.longitude),
         totalRooms,
         occupiedRooms,
+        availableRooms: Number(summary.availableRooms ?? Math.max(totalRooms - occupiedRooms, 0)),
+        maintenanceRooms: Number(summary.maintenanceRooms || 0),
         activeTenants: Number(summary.activeTenants || 0),
         activeContracts: Number(summary.activeContracts || 0),
         occupancyRate: Number(occupancyRate.toFixed(2)),
         currentMonthlyRevenue: Number(summary.currentMonthlyRevenue || 0),
+        maintenanceRate: Number(summary.maintenanceRate || 0),
+        expiringContracts: Number(summary.expiringContracts || 0),
       };
     });
 
@@ -185,10 +263,30 @@ const composeSnapshot = ({ companies, boardingHouses, summaryByHouse, subscripti
     const activeContracts = branches.reduce((sum, branch) => sum + branch.activeContracts, 0);
     const monthlyRevenue = branches.reduce((sum, branch) => sum + branch.currentMonthlyRevenue, 0);
     const occupancyRate = roomCount > 0 ? Number(((occupiedRooms / roomCount) * 100).toFixed(2)) : 0;
+    const maintenanceRooms = branches.reduce((sum, branch) => sum + Number(branch.maintenanceRooms || 0), 0);
+    const availableRooms = branches.reduce((sum, branch) => sum + Number(branch.availableRooms || 0), 0);
+    const maintenanceRate = roomCount > 0 ? Number(((maintenanceRooms / roomCount) * 100).toFixed(2)) : 0;
     const riskScore = calculateRiskScore({
       lifecycle: lifecycle.lifecycle,
       occupancyRate,
       activeTenants,
+    });
+    const metrics = {
+      overdueBillingCount: Number(company.metrics?.overdueBillingCount || 0),
+      unpaidBillingAmount: Number(company.metrics?.unpaidBillingAmount || 0),
+      pendingPaymentCount: Number(company.metrics?.pendingPaymentCount || 0),
+      verifiedPaymentCount: Number(company.metrics?.verifiedPaymentCount || 0),
+      expiringContracts: Number(company.metrics?.expiringContracts || branches.reduce((sum, branch) => sum + Number(branch.expiringContracts || 0), 0)),
+      maintenanceRooms,
+      maintenanceRate,
+    };
+    const health = deriveHealth({
+      health: company.health,
+      occupancyRate,
+      maintenanceRate,
+      overdueBillingCount: metrics.overdueBillingCount,
+      expiringContracts: metrics.expiringContracts,
+      lifecycle: lifecycle.lifecycle,
     });
 
     return {
@@ -200,10 +298,15 @@ const composeSnapshot = ({ companies, boardingHouses, summaryByHouse, subscripti
       branchCount,
       roomCount,
       occupiedRooms,
+      availableRooms,
+      maintenanceRooms,
       activeTenants,
       activeContracts,
       occupancyRate,
       monthlyRevenue,
+      metrics,
+      health,
+      lastActivityAt: company.lastActivityAt || null,
       subscription: subscription
         ? {
             status: subscription.status || 'unknown',
@@ -232,11 +335,17 @@ const composeSnapshot = ({ companies, boardingHouses, summaryByHouse, subscripti
         churnCount: accumulator.churnCount + (lc === 'churn' ? 1 : 0),
         expiringCount: accumulator.expiringCount + (lc === 'expiring' || lc === 'trial_expiring' ? 1 : 0),
         pendingPaymentCount: accumulator.pendingPaymentCount + (lc === 'pending_payment' ? 1 : 0),
+        healthyCount: accumulator.healthyCount + (company.health.status === 'healthy' ? 1 : 0),
+        warningCount: accumulator.warningCount + (company.health.status === 'warning' ? 1 : 0),
+        criticalCount: accumulator.criticalCount + (company.health.status === 'critical' ? 1 : 0),
+        averageHealthScoreTotal: accumulator.averageHealthScoreTotal + company.health.score,
         totalBranches: accumulator.totalBranches + company.branchCount,
         totalRooms: accumulator.totalRooms + company.roomCount,
         activeTenants: accumulator.activeTenants + company.activeTenants,
         monthlyRevenue: accumulator.monthlyRevenue + company.monthlyRevenue,
         occupiedRooms: accumulator.occupiedRooms + company.occupiedRooms,
+        maintenanceRooms: accumulator.maintenanceRooms + company.maintenanceRooms,
+        overdueBillingCount: accumulator.overdueBillingCount + Number(company.metrics?.overdueBillingCount || 0),
       };
     },
     {
@@ -247,16 +356,28 @@ const composeSnapshot = ({ companies, boardingHouses, summaryByHouse, subscripti
       churnCount: 0,
       expiringCount: 0,
       pendingPaymentCount: 0,
+      healthyCount: 0,
+      warningCount: 0,
+      criticalCount: 0,
+      averageHealthScoreTotal: 0,
       totalBranches: 0,
       totalRooms: 0,
       activeTenants: 0,
       monthlyRevenue: 0,
       occupiedRooms: 0,
+      maintenanceRooms: 0,
+      overdueBillingCount: 0,
     },
   );
 
   totals.averageOccupancy = totals.totalRooms > 0
     ? Number(((totals.occupiedRooms / totals.totalRooms) * 100).toFixed(2))
+    : 0;
+  totals.averageHealthScore = totals.totalCompanies > 0
+    ? Number((totals.averageHealthScoreTotal / totals.totalCompanies).toFixed(1))
+    : 0;
+  totals.maintenanceRate = totals.totalRooms > 0
+    ? Number(((totals.maintenanceRooms / totals.totalRooms) * 100).toFixed(2))
     : 0;
 
   const mapPoints = companyInsights
@@ -264,8 +385,8 @@ const composeSnapshot = ({ companies, boardingHouses, summaryByHouse, subscripti
     .filter(Boolean);
 
   const winbackQueue = companyInsights
-    .filter((company) => ['churn', 'pending_payment', 'expiring'].includes(company.lifecycle.lifecycle))
-    .sort((left, right) => right.riskScore - left.riskScore);
+    .filter((company) => ['churn', 'pending_payment', 'expiring'].includes(company.lifecycle.lifecycle) || company.health.status === 'critical')
+    .sort((left, right) => left.health.score - right.health.score || right.riskScore - left.riskScore);
 
   return {
     generatedAt: new Date().toISOString(),
@@ -276,8 +397,28 @@ const composeSnapshot = ({ companies, boardingHouses, summaryByHouse, subscripti
   };
 };
 
+const getFirstAvailable = async (token, paths) => {
+  let lastError = null;
+
+  for (const path of paths) {
+    try {
+      const payload = await httpClient.get(path, { token });
+      return payload;
+    } catch (error) {
+      if (error?.status === 401 || error?.status === 403) {
+        throw error;
+      }
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error('Semua endpoint gagal diakses.');
+};
+
 const fetchCompaniesSnapshot = async (token) => {
-  const result = await httpClient.get('/api/companies/monitoring-snapshot', { token });
+  const result = await getFirstAvailable(token, [
+    '/api/companies/monitoring-snapshot',
+  ]);
   const companyList = Array.isArray(result) ? result : [];
 
   const boardingHouses = [];
@@ -296,9 +437,14 @@ const fetchCompaniesSnapshot = async (token) => {
       summaryPairs.push([branch.id, {
         totalRooms: branch.totalRooms,
         occupiedRooms: branch.occupiedRooms,
+        availableRooms: branch.availableRooms,
+        maintenanceRooms: branch.maintenanceRooms,
         activeTenants: branch.activeTenants,
+        activeContracts: branch.activeContracts,
         currentMonthlyRevenue: branch.currentMonthlyRevenue,
         occupancyRate: branch.occupancyRate,
+        maintenanceRate: branch.maintenanceRate,
+        expiringContracts: branch.expiringContracts,
       }]);
     });
   });
@@ -308,6 +454,84 @@ const fetchCompaniesSnapshot = async (token) => {
     boardingHouses,
     summaryByHouse: new Map(summaryPairs),
     subscriptionByCompany: new Map(subscriptionPairs),
+  });
+};
+
+const ensureArray = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.items)) return payload.items;
+  return [];
+};
+
+const fetchLegacySnapshot = async (token) => {
+  const companiesPayload = await getFirstAvailable(token, [
+    '/api/companies',
+  ]);
+  const companies = ensureArray(companiesPayload);
+
+  if (!companies.length) {
+    return composeSnapshot({
+      companies: [],
+      boardingHouses: [],
+      summaryByHouse: new Map(),
+      subscriptionByCompany: new Map(),
+    });
+  }
+
+  let boardingHouses = [];
+
+  try {
+    const housesPayload = await getFirstAvailable(token, [
+      '/api/boarding-houses',
+    ]);
+    boardingHouses = ensureArray(housesPayload);
+  } catch (_housesError) {
+    boardingHouses = companies.flatMap((company) => (
+      (company.branches || []).map((branch) => ({
+        ...branch,
+        companyId: branch.companyId || company.id,
+      }))
+    ));
+  }
+
+  const summaryPairs = [];
+  await Promise.all(
+    boardingHouses.map(async (house) => {
+      if (!house?.id) return;
+
+      const fallbackSummary = {
+        totalRooms: house.totalRooms ?? house.roomCount ?? 0,
+        occupiedRooms: house.occupiedRooms ?? 0,
+        activeTenants: house.activeTenants ?? 0,
+        activeContracts: house.activeContracts ?? 0,
+        currentMonthlyRevenue: house.currentMonthlyRevenue ?? 0,
+        occupancyRate: house.occupancyRate ?? 0,
+      };
+
+      try {
+        const summary = await getFirstAvailable(token, [
+          `/api/boarding-houses/${house.id}/summary`,
+        ]);
+        summaryPairs.push([house.id, {
+          ...fallbackSummary,
+          ...(summary || {}),
+        }]);
+      } catch (_summaryError) {
+        summaryPairs.push([house.id, fallbackSummary]);
+      }
+    }),
+  );
+
+  const subscriptionByCompany = new Map(
+    companies.map((company) => [company.id, company.subscription || null]),
+  );
+
+  return composeSnapshot({
+    companies,
+    boardingHouses,
+    summaryByHouse: new Map(summaryPairs),
+    subscriptionByCompany,
   });
 };
 
@@ -422,14 +646,25 @@ const companyMonitoringService = {
         source: 'api',
         ...snapshot,
       };
-    } catch (error) {
-      if (allowMockFallback) {
+    } catch (snapshotError) {
+      try {
+        const legacySnapshot = await fetchLegacySnapshot(token);
         return {
-          source: 'mock',
-          ...buildFallbackSnapshot(),
+          source: 'api-legacy',
+          ...legacySnapshot,
         };
+      } catch (legacyError) {
+        if (allowMockFallback) {
+          return {
+            source: 'mock',
+            ...buildFallbackSnapshot(),
+          };
+        }
+
+        const baseMessage = snapshotError?.message || 'Gagal memuat data company dari endpoint utama.';
+        const legacyMessage = legacyError?.message || 'Fallback endpoint gagal.';
+        throw new Error(`${baseMessage} | ${legacyMessage}`);
       }
-      throw error;
     }
   },
 };

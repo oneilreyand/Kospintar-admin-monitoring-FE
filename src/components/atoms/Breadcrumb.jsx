@@ -4,18 +4,18 @@ import { Link } from 'react-router-dom';
 
 const Breadcrumb = ({ items }) => {
   return (
-    <nav className="flex items-center space-x-2 text-sm font-medium text-slate-500">
-      <Link to="/" className="hover:text-indigo-600">
+    <nav className="flex items-center space-x-2 text-sm font-medium text-text-secondary">
+      <Link to="/" className="hover:text-primary">
         <Home size={16} />
       </Link>
       
       {items.map((item, index) => (
         <React.Fragment key={item.label}>
-          <ChevronRight size={14} className="text-slate-400" />
+          <ChevronRight size={14} className="text-border" />
           {index === items.length - 1 ? (
-            <span className="text-indigo-600">{item.label}</span>
+            <span className="text-primary">{item.label}</span>
           ) : (
-            <Link to={item.href} className="hover:text-indigo-600">
+            <Link to={item.href} className="hover:text-primary">
               {item.label}
             </Link>
           )}

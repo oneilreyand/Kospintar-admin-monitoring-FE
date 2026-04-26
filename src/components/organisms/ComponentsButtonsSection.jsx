@@ -41,19 +41,19 @@ function ComponentsButtonsSection() {
         code={buttonsCode}
       />
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">Button Groups</h3>
+      <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-text-secondary">Button Groups</h3>
         <div className="mt-6 flex flex-wrap gap-8">
            <div className="flex">
-             <button className="rounded-l-lg border border-slate-200 bg-white px-6 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Left</button>
-             <button className="border-y border-slate-200 bg-white px-6 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Center</button>
-             <button className="rounded-r-lg border border-slate-200 bg-white px-6 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Right</button>
+             <button className="rounded-l-lg border border-border bg-white px-6 py-2.5 text-sm font-medium text-navy hover:bg-background">Left</button>
+             <button className="border-y border-border bg-white px-6 py-2.5 text-sm font-medium text-navy hover:bg-background">Center</button>
+             <button className="rounded-r-lg border border-border bg-white px-6 py-2.5 text-sm font-medium text-navy hover:bg-background">Right</button>
            </div>
            
            <div className="flex">
-             <button className="rounded-l-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-500">Left</button>
-             <button className="border-x border-indigo-500/30 bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-500">Center</button>
-             <button className="rounded-r-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-500">Right</button>
+             <button className="rounded-l-lg bg-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-brand-600">Left</button>
+             <button className="border-x border-primary/30 bg-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-brand-600">Center</button>
+             <button className="rounded-r-lg bg-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-brand-600">Right</button>
            </div>
         </div>
       </div>

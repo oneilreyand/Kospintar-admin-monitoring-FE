@@ -1,11 +1,12 @@
 -- Kospintar Monitoring - Super Admin Seed (PostgreSQL)
--- Password plaintext untuk semua user pada seed ini: admin123
--- Hash bcrypt: $2a$10$FSGH8UwxDbYqpbeMRofZA.C9n6vMOkH60pQdPpwwuGOacNKg3HP9O
+-- Password plaintext untuk semua user pada seed ini: 12345678
+-- Hash dibuat runtime via pgcrypto: crypt('12345678', gen_salt('bf', 10))
 --
 -- Jalankan di DB KospintarBE:
 -- psql <connection> -f docs/super-admin-monitoring-seed.sql
 
 BEGIN;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 INSERT INTO "Users" (
   "id", "email", "password", "name", "role",
@@ -16,7 +17,7 @@ VALUES
   (
     '9aa27e4d-8f2a-4f9e-92e2-2f1d2c9e7c01',
     'admin.monitoring@kospintar.id',
-    '$2a$10$FSGH8UwxDbYqpbeMRofZA.C9n6vMOkH60pQdPpwwuGOacNKg3HP9O',
+    crypt('12345678', gen_salt('bf', 10)),
     'Super Admin Monitoring',
     'admin',
     true,
@@ -27,7 +28,7 @@ VALUES
   (
     '9aa27e4d-8f2a-4f9e-92e2-2f1d2c9e7c02',
     'admin@kospintar.id',
-    '$2a$10$FSGH8UwxDbYqpbeMRofZA.C9n6vMOkH60pQdPpwwuGOacNKg3HP9O',
+    crypt('12345678', gen_salt('bf', 10)),
     'Super Admin Monitoring',
     'admin',
     true,
@@ -38,7 +39,7 @@ VALUES
   (
     'c4915f9c-5e6c-4dd2-bf14-c0a4ea1fce11',
     'owner.nusantara@kospintar.id',
-    '$2a$10$FSGH8UwxDbYqpbeMRofZA.C9n6vMOkH60pQdPpwwuGOacNKg3HP9O',
+    crypt('12345678', gen_salt('bf', 10)),
     'Owner Nusantara',
     'owner',
     true,
@@ -49,7 +50,7 @@ VALUES
   (
     'cccfed58-0537-4b58-95b0-c5bbd6f2c912',
     'owner.bono@kospintar.id',
-    '$2a$10$FSGH8UwxDbYqpbeMRofZA.C9n6vMOkH60pQdPpwwuGOacNKg3HP9O',
+    crypt('12345678', gen_salt('bf', 10)),
     'Owner Bono',
     'owner',
     true,
@@ -60,7 +61,7 @@ VALUES
   (
     '9e2ccbd9-38e1-4d42-97aa-963d1b2b6d13',
     'owner.resya@kospintar.id',
-    '$2a$10$FSGH8UwxDbYqpbeMRofZA.C9n6vMOkH60pQdPpwwuGOacNKg3HP9O',
+    crypt('12345678', gen_salt('bf', 10)),
     'Owner Resya',
     'owner',
     true,
@@ -70,6 +71,7 @@ VALUES
   )
 ON CONFLICT ("email") DO UPDATE
 SET
+  "password" = crypt('12345678', gen_salt('bf', 10)),
   "name" = EXCLUDED."name",
   "role" = EXCLUDED."role",
   "isEmailVerified" = true,

@@ -50,18 +50,18 @@ const ITEMS_PER_PAGE = 15;
 
 function KpiCard({ icon: Icon, label, value, tone, sub }) {
   const tones = {
-    success: 'bg-emerald-50 text-emerald-600 border-emerald-100',
-    danger:  'bg-rose-50 text-rose-600 border-rose-100',
-    warning: 'bg-amber-50 text-amber-600 border-amber-100',
-    info:    'bg-sky-50 text-sky-600 border-sky-100',
-    neutral: 'bg-slate-100 text-slate-600 border-slate-200',
+    success: 'bg-success-50 text-success-700 border-success-100',
+    danger:  'bg-danger/10 text-error-700 border-danger/25',
+    warning: 'bg-warning/10 text-warning-700 border-warning/25',
+    info:    'bg-navy/10 text-navy border-navy/20',
+    neutral: 'bg-background text-text-secondary border-border',
   };
   const iconTones = {
-    success: 'bg-emerald-100 text-emerald-600',
-    danger:  'bg-rose-100 text-rose-600',
-    warning: 'bg-amber-100 text-amber-600',
-    info:    'bg-sky-100 text-sky-600',
-    neutral: 'bg-slate-100 text-slate-600',
+    success: 'bg-success-100 text-success-700',
+    danger:  'bg-danger/15 text-error-700',
+    warning: 'bg-warning/15 text-warning-700',
+    info:    'bg-navy/10 text-navy',
+    neutral: 'bg-background text-text-secondary',
   };
 
   return (
@@ -74,8 +74,8 @@ function KpiCard({ icon: Icon, label, value, tone, sub }) {
           {label}
         </span>
       </div>
-      <p className="mt-5 text-3xl font-bold tracking-tight text-slate-900">{formatNumber(value)}</p>
-      {sub && <p className="mt-1 text-xs text-slate-400">{sub}</p>}
+      <p className="mt-5 text-3xl font-bold tracking-tight text-navy">{formatNumber(value)}</p>
+      {sub && <p className="mt-1 text-xs text-text-secondary">{sub}</p>}
     </SurfaceCard>
   );
 }
@@ -181,7 +181,7 @@ function NotificationsPage() {
         <button
           onClick={() => { fetchLogs(); fetchStats(); }}
           disabled={loading}
-          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-xl border border-border bg-white px-4 py-2.5 text-sm font-semibold text-navy shadow-sm transition hover:bg-background disabled:opacity-50"
         >
           <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
           Refresh
@@ -223,8 +223,8 @@ function NotificationsPage() {
       {/* ── Filters & Table ── */}
       <SurfaceCard className="overflow-hidden p-0">
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center gap-3 border-b border-slate-100 bg-slate-50/50 px-5 py-4">
-          <div className="flex items-center gap-2 text-slate-500">
+        <div className="flex flex-wrap items-center gap-3 border-b border-border bg-background px-5 py-4">
+          <div className="flex items-center gap-2 text-text-secondary">
             <Filter size={15} />
             <span className="text-sm font-semibold">Filter:</span>
           </div>
@@ -237,8 +237,8 @@ function NotificationsPage() {
                 onClick={() => setChannelFilter(ch)}
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
                   channelFilter === ch
-                    ? 'bg-brand-500 text-white shadow-sm'
-                    : 'border border-slate-200 bg-white text-slate-500 hover:text-slate-700'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'border border-border bg-white text-text-secondary hover:text-navy'
                 }`}
               >
                 {ch === 'all' ? 'Semua Channel' : ch === 'whatsapp' ? '💬 WhatsApp' : '✉️ Email'}
@@ -246,7 +246,7 @@ function NotificationsPage() {
             ))}
           </div>
 
-          <div className="h-5 w-px bg-slate-200" />
+          <div className="h-5 w-px bg-border" />
 
           {/* Status filter pills */}
           <div className="flex gap-1.5">
@@ -256,8 +256,8 @@ function NotificationsPage() {
                 onClick={() => setStatusFilter(st)}
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
                   statusFilter === st
-                    ? 'bg-slate-800 text-white shadow-sm'
-                    : 'border border-slate-200 bg-white text-slate-500 hover:text-slate-700'
+                    ? 'bg-navy text-white shadow-sm'
+                    : 'border border-border bg-white text-text-secondary hover:text-navy'
                 }`}
               >
                 {st === 'all' ? 'Semua Status' : st === 'sent' ? '✅ Terkirim' : st === 'failed' ? '❌ Gagal' : '⏭ Diskip'}
@@ -267,13 +267,13 @@ function NotificationsPage() {
 
           {/* Search */}
           <div className="relative ml-auto min-w-[220px]">
-            <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari nomor / pesan..."
-              className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-8 pr-3 text-sm text-slate-700 outline-none ring-brand-200 transition focus:border-brand-300 focus:ring-2"
+              className="w-full rounded-xl border border-border bg-white py-2 pl-8 pr-3 text-sm text-navy outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
         </div>
@@ -282,9 +282,9 @@ function NotificationsPage() {
         {loading ? (
           <div className="flex justify-center py-16"><Spinner label="Memuat log notifikasi..." /></div>
         ) : error ? (
-          <div className="py-16 text-center text-sm text-rose-500">{error}</div>
+          <div className="py-16 text-center text-sm text-danger">{error}</div>
         ) : filteredLogs.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-200 m-5 bg-slate-50 px-4 py-12 text-center text-sm text-slate-400">
+          <div className="m-5 rounded-2xl border border-dashed border-border bg-background px-4 py-12 text-center text-sm text-text-secondary">
             Tidak ada log yang cocok dengan filter ini.
           </div>
         ) : (
@@ -292,7 +292,7 @@ function NotificationsPage() {
             <div className="overflow-x-auto">
               <table className="min-w-full">
                 <thead>
-                  <tr className="border-b border-slate-100 text-left text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                  <tr className="border-b border-border text-left text-[10px] font-bold uppercase tracking-[0.14em] text-text-secondary">
                     <th className="px-5 py-3">Penerima</th>
                     <th className="px-5 py-3">Pesan</th>
                     <th className="px-5 py-3">Event</th>
@@ -313,24 +313,24 @@ function NotificationsPage() {
                     return (
                       <tr
                         key={log.id}
-                        className="group border-b border-slate-50 transition last:border-0 hover:bg-slate-50/60"
+                        className="group border-b border-border transition last:border-0 hover:bg-background"
                       >
                         <td className="px-5 py-3">
-                          <p className="text-xs font-bold text-slate-900">{log.recipientAddress || '-'}</p>
+                          <p className="text-xs font-bold text-navy">{log.recipientAddress || '-'}</p>
                           {log.retryCount > 0 && (
-                            <p className="mt-0.5 text-[10px] text-slate-400">Retry: {log.retryCount}×</p>
+                            <p className="mt-0.5 text-[10px] text-text-secondary">Retry: {log.retryCount}×</p>
                           )}
                         </td>
                         <td className="px-5 py-3 max-w-[280px]">
-                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">{log.message || '-'}</p>
+                          <p className="line-clamp-2 text-xs leading-relaxed text-navy">{log.message || '-'}</p>
                           {log.errorMessage && log.status === 'failed' && (
-                            <p className="mt-1 text-[10px] font-medium text-rose-500 bg-rose-50 px-2 py-0.5 rounded-md">
+                            <p className="mt-1 rounded-md bg-danger/10 px-2 py-0.5 text-[10px] font-medium text-error-700">
                               {log.errorMessage}
                             </p>
                           )}
                         </td>
                         <td className="px-5 py-3">
-                          <span className="text-[10px] text-slate-500 font-mono">{log.eventKey || '-'}</span>
+                          <span className="font-mono text-[10px] text-text-secondary">{log.eventKey || '-'}</span>
                         </td>
                         <td className="px-5 py-3">
                           <StatusBadge tone={channelInfo.tone}>
@@ -348,7 +348,7 @@ function NotificationsPage() {
                             </span>
                           </StatusBadge>
                         </td>
-                        <td className="px-5 py-3 whitespace-nowrap text-[11px] text-slate-400">
+                        <td className="whitespace-nowrap px-5 py-3 text-[11px] text-text-secondary">
                           {formatDate(log.createdAt)}
                         </td>
                         <td className="px-5 py-3">
@@ -356,7 +356,7 @@ function NotificationsPage() {
                             <button
                               onClick={() => handleRetry(log.id)}
                               disabled={retryingId === log.id}
-                              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-bold text-brand-600 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 disabled:opacity-50"
+                              className="flex items-center gap-1.5 rounded-lg border border-border bg-white px-2.5 py-1.5 text-[10px] font-bold text-primary shadow-sm transition hover:border-primary/30 hover:bg-primary/10 disabled:opacity-50"
                             >
                               <RefreshCw size={10} className={retryingId === log.id ? 'animate-spin' : ''} />
                               Retry
@@ -371,22 +371,22 @@ function NotificationsPage() {
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/30 px-5 py-3">
-              <p className="text-xs text-slate-400">
+            <div className="flex items-center justify-between border-t border-border bg-background px-5 py-3">
+              <p className="text-xs text-text-secondary">
                 Menampilkan {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, filteredLogs.length)}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredLogs.length)} dari {filteredLogs.length} entri
               </p>
               <div className="flex items-center gap-1.5">
                 <button
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((p) => p - 1)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 transition hover:bg-slate-50 disabled:opacity-40"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-white text-text-secondary transition hover:bg-background disabled:opacity-40"
                 >
                   <ChevronLeft size={15} />
                 </button>
                 {[...Array(totalPages)].map((_, idx) => {
                   const page = idx + 1;
                   if (totalPages > 7 && page !== 1 && page !== totalPages && Math.abs(page - currentPage) > 1) {
-                    if (Math.abs(page - currentPage) === 2) return <span key={page} className="text-slate-300 text-xs">…</span>;
+                    if (Math.abs(page - currentPage) === 2) return <span key={page} className="text-xs text-border">…</span>;
                     return null;
                   }
                   return (
@@ -395,8 +395,8 @@ function NotificationsPage() {
                       onClick={() => setCurrentPage(page)}
                       className={`h-8 w-8 rounded-lg text-xs font-bold transition ${
                         currentPage === page
-                          ? 'bg-brand-500 text-white shadow-md shadow-brand-500/30'
-                          : 'border border-slate-200 bg-white text-slate-500 hover:bg-slate-50'
+                          ? 'bg-primary text-white shadow-md shadow-primary/30'
+                          : 'border border-border bg-white text-text-secondary hover:bg-background'
                       }`}
                     >
                       {page}
@@ -406,7 +406,7 @@ function NotificationsPage() {
                 <button
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage((p) => p + 1)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 transition hover:bg-slate-50 disabled:opacity-40"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-white text-text-secondary transition hover:bg-background disabled:opacity-40"
                 >
                   <ChevronRight size={15} />
                 </button>

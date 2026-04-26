@@ -1,18 +1,19 @@
 import SurfaceCard from '../atoms/SurfaceCard';
 import TrafficSourceRow from '../molecules/TrafficSourceRow';
+import SectionHeading from '../molecules/SectionHeading';
 
 function TrafficChannelsCard({ channels }) {
   return (
     <SurfaceCard className="p-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-slate-900">Traffic Channels</p>
-          <p className="mt-1 text-sm text-slate-500">Sumber traffic dan channel growth Kospintar.</p>
-        </div>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-          Live Mix
-        </span>
-      </div>
+      <SectionHeading
+        title="Traffic Channels"
+        subtitle="Sumber traffic dan channel growth Kospintar."
+        badge={(
+          <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+            Live Mix
+          </span>
+        )}
+      />
 
       <div className="mt-6 grid gap-3">
         {channels.map((source) => (

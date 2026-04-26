@@ -1,4 +1,4 @@
-import { Building2, CircleOff, MapPinned, RefreshCcw, Users, Wallet } from 'lucide-react';
+import { Activity, Building2, CircleOff, MapPinned, RefreshCcw, ShieldAlert, ShieldCheck, TriangleAlert, Users, Wallet } from 'lucide-react';
 import SurfaceCard from '../atoms/SurfaceCard';
 import StatusBadge from '../atoms/StatusBadge';
 
@@ -9,6 +9,34 @@ const formatCurrency = (value) => new Intl.NumberFormat('id-ID', {
 }).format(Number(value || 0));
 
 const itemsConfig = [
+  {
+    id: 'healthy',
+    label: 'Healthy',
+    key: 'healthyCount',
+    icon: ShieldCheck,
+    tone: 'success',
+  },
+  {
+    id: 'warning',
+    label: 'Warning',
+    key: 'warningCount',
+    icon: TriangleAlert,
+    tone: 'warning',
+  },
+  {
+    id: 'critical',
+    label: 'Critical',
+    key: 'criticalCount',
+    icon: ShieldAlert,
+    tone: 'danger',
+  },
+  {
+    id: 'healthScore',
+    label: 'Avg Health Score',
+    key: 'averageHealthScore',
+    icon: Activity,
+    tone: 'info',
+  },
   {
     id: 'subscribed',
     label: 'Company Berlangganan',
@@ -52,6 +80,20 @@ const itemsConfig = [
     tone: 'violet',
   },
   {
+    id: 'expiring',
+    label: 'Akan Berakhir',
+    key: 'expiringCount',
+    icon: RefreshCcw,
+    tone: 'warning',
+  },
+  {
+    id: 'pendingPayment',
+    label: 'Pending Payment',
+    key: 'pendingPaymentCount',
+    icon: Wallet,
+    tone: 'warning',
+  },
+  {
     id: 'mrr',
     label: 'Potensi MRR',
     key: 'monthlyRevenue',
@@ -61,25 +103,29 @@ const itemsConfig = [
   },
 ];
 
-function CompanyKpiGrid({ totals }) {
+function CompanyKpiGrid({ totals, include = [] }) {
+  const filteredItems = include.length > 0 
+    ? itemsConfig.filter(item => include.includes(item.id))
+    : itemsConfig;
+
   return (
-    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {itemsConfig.map((item) => {
+    <section className={`grid gap-4 md:grid-cols-2 ${filteredItems.length > 4 ? 'xl:grid-cols-4' : 'xl:grid-cols-' + filteredItems.length}`}>
+      {filteredItems.map((item) => {
         const Icon = item.icon;
         const rawValue = totals?.[item.key] || 0;
         const value = item.formatter ? item.formatter(rawValue) : rawValue;
 
         return (
-          <SurfaceCard key={item.id} className="p-5">
+          <SurfaceCard key={item.id} className="p-5 border-l-4" style={{ borderLeftColor: `var(--color-${item.tone}-500, #ccc)` }}>
             <div className="flex items-start justify-between gap-4">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
-                <Icon size={20} />
+              <div className="flex flex-col gap-1">
+                <p className="text-xs font-black uppercase tracking-widest text-text-secondary">{item.label}</p>
+                <p className="text-2xl font-black tracking-tighter text-navy">{value}</p>
+              </div>
+              <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl bg-${item.tone}/10 text-${item.tone}`}>
+                <Icon size={18} />
               </span>
-              <StatusBadge tone={item.tone}>
-                {item.label}
-              </StatusBadge>
             </div>
-            <p className="mt-5 text-3xl font-bold tracking-tight text-slate-900">{value}</p>
           </SurfaceCard>
         );
       })}

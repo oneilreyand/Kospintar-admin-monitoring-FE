@@ -15,6 +15,7 @@
   margin: 0;
   font-size: clamp(2rem, 4vw, 3.2rem);
   line-height: 1.02;
+  color: var(--ui-navy);
 }
 
 .page-subtitle {
@@ -39,8 +40,8 @@
   grid-column: span 12;
   padding: 22px;
   border: 1px solid var(--line);
-  border-radius: 26px;
-  background: rgba(255, 255, 255, 0.78);
+  border-radius: 24px;
+  background: #ffffff;
   box-shadow: var(--shadow);
 }
 
@@ -63,7 +64,8 @@
   padding: 20px;
   border: 1px solid var(--line);
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.8);
+  background: #ffffff;
+  box-shadow: var(--shadow);
 }
 
 .stat-card strong {
@@ -159,14 +161,20 @@
 }
 
 .button-primary {
-  background: linear-gradient(135deg, #115e59, #0f766e);
-  color: #f6fffd;
+  background: var(--ui-primary);
+  color: #ffffff;
+  border-color: var(--ui-primary);
+}
+
+.button-primary:hover {
+  background: #25b463;
+  border-color: #25b463;
 }
 
 .button-secondary {
   border-color: var(--line);
-  background: rgba(255, 255, 255, 0.82);
-  color: var(--ink);
+  background: #ffffff;
+  color: var(--ui-navy);
 }
 
 .pill {
@@ -226,7 +234,7 @@ th {
   padding: 28px;
   border: 1px solid var(--line);
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.86);
+  background: #ffffff;
   box-shadow: var(--shadow);
 }
 
@@ -246,8 +254,14 @@ th {
   padding: 14px 16px;
   border-radius: 16px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--ui-bg);
   font: inherit;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--ui-primary);
+  box-shadow: 0 0 0 3px rgba(45, 204, 112, 0.15);
 }
 
 .helper-text {

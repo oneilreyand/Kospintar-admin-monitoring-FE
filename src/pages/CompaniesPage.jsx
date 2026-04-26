@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Spinner from '../components/atoms/Spinner';
+import Tabs from '../components/atoms/Tabs';
 import CompanyCoverageMap from '../components/organisms/CompanyCoverageMap';
 import CompanyDetailPanel from '../components/organisms/CompanyDetailPanel';
 import CompanyKpiGrid from '../components/organisms/CompanyKpiGrid';
@@ -58,10 +59,22 @@ function CompaniesPage() {
     return companies
       .filter((company) => {
         if (filter === 'all') return true;
+        
+        // Lifecycle filters
         const lc = company.lifecycle.lifecycle;
         if (filter === 'subscribed') return lc === 'subscribed' || lc === 'trial';
         if (filter === 'expiring') return lc === 'expiring' || lc === 'trial_expiring';
-        return lc === filter;
+        if (['non_subscribed', 'pending_payment', 'churn'].includes(filter)) {
+          return lc === filter;
+        }
+
+        // Health filters
+        const healthStatus = company.health.status; // 'healthy', 'warning', 'critical'
+        if (['healthy', 'warning', 'critical'].includes(filter)) {
+          return healthStatus === filter;
+        }
+
+        return true;
       })
       .filter((company) => {
         if (!lowerQuery) return true;
@@ -93,9 +106,9 @@ function CompaniesPage() {
   if (error) {
     return (
       <div className="page-shell">
-        <section className="page-card border-rose-200 bg-rose-50">
-          <h2 className="text-rose-700">Gagal memuat data company</h2>
-          <p className="mt-2 text-sm text-rose-600">{error}</p>
+        <section className="page-card border-danger/30 bg-danger/10">
+          <h2 className="text-error-700">Gagal memuat data company</h2>
+          <p className="mt-2 text-sm text-error-700">{error}</p>
           <div className="mt-4">
             <button
               type="button"
@@ -110,6 +123,57 @@ function CompaniesPage() {
     );
   }
 
+  const tabs = [
+    {
+      label: 'Overview',
+      content: (
+        <div className="space-y-6">
+          <CompanyKpiGrid totals={snapshot?.totals} include={['mrr', 'tenants', 'branches', 'healthScore']} />
+          <CompanyCoverageMap 
+            mapPoints={snapshot?.mapPoints || []} 
+            title="Sebaran Seluruh Cabang Company"
+          />
+        </div>
+      )
+    },
+    {
+      label: 'Directory',
+      content: (
+        <div className="space-y-6">
+          <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+            <CompanyListPanel
+              companies={filteredCompanies}
+              selectedCompanyId={selectedCompanyId}
+              onSelectCompany={setSelectedCompanyId}
+              filter={filter}
+              onFilterChange={setFilter}
+              query={query}
+              onQueryChange={setQuery}
+            />
+            <CompanyCoverageMap 
+              mapPoints={filteredMapPoints} 
+              title={selectedCompany ? `Lokasi: ${selectedCompany.name}` : 'Pilih Company'}
+              hideStats={true}
+            />
+          </section>
+          <CompanyDetailPanel company={selectedCompany} />
+        </div>
+      )
+    },
+    {
+      label: 'Retention',
+      content: (
+        <div className="space-y-6">
+          <CompanyKpiGrid totals={snapshot?.totals} include={['churn', 'critical', 'expiring', 'pendingPayment']} />
+          <CompanyWinbackPanel
+            companies={snapshot?.winbackQueue || []}
+            totals={snapshot?.totals}
+          />
+        </div>
+      )
+    }
+  ];
+
   return (
     <div className="page-shell">
       <section className="page-header">
@@ -119,30 +183,7 @@ function CompaniesPage() {
         </div>
       </section>
 
-      <CompanyKpiGrid totals={snapshot?.totals} />
-
-      <section className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
-        <CompanyListPanel
-          companies={filteredCompanies}
-          selectedCompanyId={selectedCompanyId}
-          onSelectCompany={setSelectedCompanyId}
-          filter={filter}
-          onFilterChange={setFilter}
-          query={query}
-          onQueryChange={setQuery}
-        />
-        <CompanyDetailPanel company={selectedCompany} />
-      </section>
-
-      <CompanyCoverageMap 
-        mapPoints={filteredMapPoints} 
-        title={selectedCompany ? `Sebaran Cabang: ${selectedCompany.name}` : undefined}
-      />
-
-      <CompanyWinbackPanel
-        companies={snapshot?.winbackQueue || []}
-        totals={snapshot?.totals}
-      />
+      <Tabs tabs={tabs} />
     </div>
   );
 }

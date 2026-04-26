@@ -27,9 +27,9 @@ const ComponentsMediaSection = () => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-900">Media & Visuals</h2>
-        <p className="mt-2 text-sm text-slate-500">Components for displaying images, videos, and dynamic sliders.</p>
+      <section className="rounded-2xl border border-border bg-white px-6 py-6 shadow-sm">
+        <h2 className="text-xl font-bold text-navy">Media & Visuals</h2>
+        <p className="mt-2 text-sm text-text-secondary">Components for displaying images, videos, and dynamic sliders.</p>
       </section>
 
       <ComponentShowcaseItem
@@ -94,8 +94,8 @@ const ComponentsMediaSection = () => {
                 alt="Video Poster"
                 className="h-full w-full object-cover opacity-80"
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-900/10 hover:bg-slate-900/20 transition-colors">
-                 <button className="flex h-16 w-16 items-center justify-center rounded-full bg-indigo-600 text-white shadow-2xl transition-transform hover:scale-110 active:scale-95">
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-900/10 transition-colors hover:bg-slate-900/20">
+                 <button className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white shadow-2xl transition-transform hover:scale-110 active:scale-95">
                    <Play size={32} fill="currentColor" />
                  </button>
               </div>
@@ -108,5 +108,4 @@ const ComponentsMediaSection = () => {
 };
 
 export default ComponentsMediaSection;
-
 

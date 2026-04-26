@@ -7,10 +7,16 @@ const userAuthService = {
     });
 
     return {
+      requiresTwoFactor: payload?.requiresTwoFactor === true,
+      twoFactorToken: payload?.twoFactorToken || null,
       user: payload?.user || null,
       token: payload?.token || null,
       refreshToken: payload?.refreshToken || null,
     };
+  },
+
+  async getCurrentUser(token) {
+    return httpClient.get('/users/me', { token });
   },
 };
 

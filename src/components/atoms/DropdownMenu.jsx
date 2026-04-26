@@ -47,7 +47,7 @@ function DropdownMenu({ label, icon, items = [], activeItemId, onItemSelect }) {
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-40 grid gap-1.5 rounded-[18px] border border-gray-200 bg-white p-2 shadow-theme-sm">
+        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-10 grid gap-1.5 rounded-[18px] border border-gray-200 bg-white p-2 shadow-theme-sm">
           {items.map((item) => (
             <button
               key={item.id}

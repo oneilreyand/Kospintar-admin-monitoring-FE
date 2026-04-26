@@ -4,28 +4,28 @@ import { AlertCircle, CheckCircle, Info, XCircle } from 'lucide-react';
 const Alert = ({ type = 'info', title, message, onDismiss }) => {
   const types = {
     success: {
-      bg: 'bg-[#E1F9F2]',
-      border: 'border-[#34D399]',
-      text: 'text-[#004434]',
-      icon: <CheckCircle className="text-[#34D399]" size={20} />,
+      bg: 'bg-success-50',
+      border: 'border-success-300',
+      text: 'text-success-700',
+      icon: <CheckCircle className="text-success-600" size={20} />,
     },
     error: {
-      bg: 'bg-[#FEE2E2]',
-      border: 'border-[#F87171]',
-      text: 'text-[#991B1B]',
-      icon: <XCircle className="text-[#F87171]" size={20} />,
+      bg: 'bg-danger/10',
+      border: 'border-danger/35',
+      text: 'text-error-700',
+      icon: <XCircle className="text-danger" size={20} />,
     },
     warning: {
-      bg: 'bg-[#FEF9C3]',
-      border: 'border-[#FACC15]',
-      text: 'text-[#854D0E]',
-      icon: <AlertCircle className="text-[#FACC15]" size={20} />,
+      bg: 'bg-warning/10',
+      border: 'border-warning/35',
+      text: 'text-warning-700',
+      icon: <AlertCircle className="text-warning" size={20} />,
     },
     info: {
-      bg: 'bg-[#E0F2FE]',
-      border: 'border-[#38BDF8]',
-      text: 'text-[#075985]',
-      icon: <Info className="text-[#38BDF8]" size={20} />,
+      bg: 'bg-primary/10',
+      border: 'border-primary/35',
+      text: 'text-navy',
+      icon: <Info className="text-primary" size={20} />,
     },
   };
 
@@ -39,7 +39,7 @@ const Alert = ({ type = 'info', title, message, onDismiss }) => {
         <p className={`mt-1 text-sm leading-relaxed ${style.text} opacity-90`}>{message}</p>
       </div>
       {onDismiss && (
-        <button onClick={onDismiss} className="text-slate-400 hover:text-slate-600">
+        <button onClick={onDismiss} className="text-text-secondary hover:text-navy">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>

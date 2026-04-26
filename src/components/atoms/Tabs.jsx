@@ -5,20 +5,20 @@ const Tabs = ({ tabs }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex border-b border-slate-100">
+      <div className="flex border-b border-border">
         {tabs.map((tab, index) => (
           <button
             key={tab.label}
             onClick={() => setActiveTab(index)}
             className={`relative px-6 py-3 text-sm font-bold transition-all ${
               activeTab === index 
-                ? 'text-indigo-600' 
-                : 'text-slate-500 hover:text-slate-700'
+                ? 'text-primary' 
+                : 'text-text-secondary hover:text-navy'
             }`}
           >
             {tab.label}
             {activeTab === index && (
-              <div className="absolute bottom-0 left-0 h-0.5 w-full bg-indigo-600 animate-in fade-in slide-in-from-bottom-1 duration-200" />
+              <div className="absolute bottom-0 left-0 h-0.5 w-full bg-primary animate-in fade-in slide-in-from-bottom-1 duration-200" />
             )}
           </button>
         ))}

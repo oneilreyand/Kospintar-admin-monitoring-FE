@@ -13,8 +13,9 @@ function TailButton({
   };
 
   const variantClasses = {
-    primary: 'bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600',
-    secondary: 'bg-white text-gray-700 shadow-theme-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50',
+    primary: 'bg-primary text-white shadow-theme-xs hover:bg-brand-600',
+    secondary: 'bg-white text-navy shadow-theme-xs ring-1 ring-inset ring-border hover:bg-background',
+    danger: 'bg-danger text-white shadow-theme-xs hover:bg-error-600',
   };
 
   return (

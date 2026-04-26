@@ -18,7 +18,7 @@ function Dashboard() {
 
   if (error) {
     return (
-      <div className="rounded-[28px] border border-rose-200 bg-rose-50 p-6 text-rose-700">
+      <div className="rounded-[28px] border border-danger/30 bg-danger/10 p-6 text-error-700">
         Gagal memuat dashboard: {error}
       </div>
     );

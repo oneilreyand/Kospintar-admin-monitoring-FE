@@ -17,6 +17,7 @@ const ArchitecturePage = lazy(() => import('../pages/ArchitecturePage'));
 const ComponentsPage = lazy(() => import('../pages/ComponentsPage'));
 const Login = lazy(() => import('../pages/Login'));
 const Signup = lazy(() => import('../pages/Signup'));
+const ForgotPassword = lazy(() => import('../pages/ForgotPassword'));
 const ErrorPage = lazy(() => import('../pages/ErrorPage'));
 
 function AppRouter() {
@@ -26,6 +27,7 @@ function AppRouter() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/" element={<ProtectedRoute />}>
 
             <Route path="/" element={<MainTemplate />}>

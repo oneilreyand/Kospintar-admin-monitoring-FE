@@ -20,10 +20,10 @@ function MainTemplate() {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div className="layout-shell bg-gray-50">
+    <div className="layout-shell bg-background">
       <Sidebar isOpen={sidebarOpen} closeSidebar={closeSidebar} />
 
-      <div className="layout-main flex-1 min-w-0 bg-app-shell">
+      <div className="layout-main flex-1 min-w-0 bg-background">
         <div className="layout-header">
           <Header
             title="Kospintar Marketing Dashboard"

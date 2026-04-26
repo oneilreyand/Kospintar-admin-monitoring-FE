@@ -1,13 +1,14 @@
 import SurfaceCard from '../atoms/SurfaceCard';
 import ActivityFeedItem from '../molecules/ActivityFeedItem';
+import SectionHeading from '../molecules/SectionHeading';
 
 function ActivityFeedCard({ items }) {
   return (
     <SurfaceCard className="p-6">
-      <div>
-        <p className="text-sm font-semibold text-slate-900">Recent Activity</p>
-        <p className="mt-1 text-sm text-slate-500">Perubahan campaign, creative, dan source attribution.</p>
-      </div>
+      <SectionHeading
+        title="Recent Activity"
+        subtitle="Perubahan campaign, creative, dan source attribution."
+      />
 
       <div className="mt-6 grid gap-3">
         {items.map((item) => (

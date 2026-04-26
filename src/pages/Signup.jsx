@@ -35,9 +35,9 @@ function Signup() {
     <AuthLayout
       title="Sign Up"
       subtitle="Enter your email and password to sign up!"
-      footerText="Already have an account?"
+      footerText="Sudah punya akun?"
       footerLink="/login"
-      footerLinkText="Sign In"
+      footerLinkText="Masuk"
     >
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
@@ -71,7 +71,7 @@ function Signup() {
                  value={firstName}
                  onChange={(e) => setFirstName(e.target.value)}
                  placeholder="Enter first name"
-                 className="block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 transition-colors"
+                 className="block w-full rounded-lg border border-border bg-background px-4 py-3.5 text-navy placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
                  required
                />
              </div>
@@ -84,7 +84,7 @@ function Signup() {
                  value={lastName}
                  onChange={(e) => setLastName(e.target.value)}
                  placeholder="Enter last name"
-                 className="block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 transition-colors"
+                 className="block w-full rounded-lg border border-border bg-background px-4 py-3.5 text-navy placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
                  required
                />
              </div>
@@ -99,7 +99,7 @@ function Signup() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 transition-colors"
+              className="block w-full rounded-lg border border-border bg-background px-4 py-3.5 text-navy placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
               required
             />
           </div>
@@ -114,7 +114,7 @@ function Signup() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 transition-colors"
+                className="block w-full rounded-lg border border-border bg-background px-4 py-3.5 text-navy placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
                 required
               />
               <button
@@ -129,9 +129,9 @@ function Signup() {
 
           <div>
             <label className="flex items-start gap-3 cursor-pointer">
-              <input type="checkbox" className="mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" required />
-              <span className="text-sm text-slate-600">
-                By creating an account means you agree to the <a href="#" className="font-semibold text-indigo-600 hover:underline">Terms and Conditions</a>, and our <a href="#" className="font-semibold text-indigo-600 hover:underline">Privacy Policy</a>
+              <input type="checkbox" className="mt-1 h-4 w-4 rounded border-border text-primary focus:ring-primary" required />
+              <span className="text-sm text-text-secondary">
+                By creating an account means you agree to the <a href="#" className="font-semibold text-primary hover:underline">Terms and Conditions</a>, and our <a href="#" className="font-semibold text-primary hover:underline">Privacy Policy</a>
               </span>
             </label>
           </div>
@@ -139,7 +139,7 @@ function Signup() {
           <button
             type="submit"
             disabled={submitting}
-            className="flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70 transition-all active:scale-[0.98]"
+            className="flex w-full items-center justify-center rounded-lg bg-primary px-4 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-70 transition-all active:scale-[0.98]"
           >
             {submitting ? 'Creating account...' : 'Sign up'}
           </button>

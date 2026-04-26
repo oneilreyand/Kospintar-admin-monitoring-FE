@@ -1,35 +1,40 @@
 import React from 'react';
 
-const Badge = ({ children, color = 'blue', variant = 'solid', rounded = 'full' }) => {
+const Badge = ({ children, color = 'green', variant = 'solid', rounded = 'full' }) => {
   const colors = {
+    green: {
+      solid: 'bg-primary text-white',
+      outline: 'border border-primary text-primary',
+      light: 'bg-primary/10 text-primary',
+    },
     blue: {
-      solid: 'bg-[#3C50E0] text-white',
-      outline: 'border border-[#3C50E0] text-[#3C50E0]',
-      light: 'bg-[#E0E7FF] text-[#3C50E0]',
+      solid: 'bg-primary text-white',
+      outline: 'border border-primary text-primary',
+      light: 'bg-primary/10 text-primary',
     },
     cyan: {
-      solid: 'bg-[#10B981] text-white',
-      outline: 'border border-[#10B981] text-[#10B981]',
-      light: 'bg-[#DCFCE7] text-[#10B981]',
+      solid: 'bg-success-500 text-white',
+      outline: 'border border-success-500 text-success-700',
+      light: 'bg-success-50 text-success-700',
     },
     yellow: {
-      solid: 'bg-[#F2994A] text-white',
-      outline: 'border border-[#F2994A] text-[#F2994A]',
-      light: 'bg-[#FEF3C7] text-[#F2994A]',
+      solid: 'bg-warning text-white',
+      outline: 'border border-warning text-warning-700',
+      light: 'bg-warning/10 text-warning-700',
     },
     red: {
-      solid: 'bg-[#D34053] text-white',
-      outline: 'border border-[#D34053] text-[#D34053]',
-      light: 'bg-[#FEE2E2] text-[#D34053]',
+      solid: 'bg-danger text-white',
+      outline: 'border border-danger text-error-700',
+      light: 'bg-danger/10 text-error-700',
     },
     gray: {
-      solid: 'bg-[#64748B] text-white',
-      outline: 'border border-[#64748B] text-[#64748B]',
-      light: 'bg-[#F1F5F9] text-[#64748B]',
+      solid: 'bg-navy text-white',
+      outline: 'border border-border text-navy',
+      light: 'bg-background text-navy',
     },
   };
 
-  const colorStyle = colors[color] || colors.blue;
+  const colorStyle = colors[color] || colors.green;
   const variantStyle = colorStyle[variant] || colorStyle.solid;
   const roundedStyle = rounded === 'full' ? 'rounded-full' : 'rounded-md';
 
