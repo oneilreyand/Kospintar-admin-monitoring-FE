@@ -13,7 +13,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MenuSection from './MenuSection';
-import nextLogo from '../../assets/next-level-ic.svg';
+import kosaPintarLogo from '../../assets/kosPintar.svg';
 
 function Sidebar({ isOpen, closeSidebar }) {
   const navigate = useNavigate();
@@ -91,7 +91,7 @@ function Sidebar({ isOpen, closeSidebar }) {
         <div className="flex flex-col justify-start space-y-4 p-5">
           <div className="flex items-center justify-between space-x-3 md:justify-start">
             <div className="flex min-w-0 items-center space-x-3">
-              <img src={nextLogo} alt="Kospintar" className="h-10 w-auto shrink-0" />
+              <img src={kosaPintarLogo} alt="Kospintar" className="h-20 w-auto shrink-0" />
               <span className="min-w-full whitespace-nowrap text-xl font-bold text-sidebar-text transition-opacity duration-300 ease-out dark:text-dark-text md:opacity-0 md:group-hover:opacity-100">
                 Lulu
               </span>

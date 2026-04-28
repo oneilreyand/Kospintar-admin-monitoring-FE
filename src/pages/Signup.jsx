@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { showSnackbar } from '../store/action/snackbar';
 import AuthLayout from '../components/templates/AuthLayout';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Check } from 'lucide-react';
 
 function Signup() {
   const dispatch = useDispatch();
@@ -124,6 +124,29 @@ function Signup() {
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
+            </div>
+            
+            <div className="mt-3 space-y-2">
+              {[
+                { label: "Minimal 8 karakter", met: password.length >= 8 },
+                { label: "Minimal satu angka", met: /\d/.test(password) },
+                { label: "Minimal satu simbol", met: /[^A-Za-z0-9]/.test(password) },
+              ].map((req, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <div
+                    className={`flex h-4 w-4 items-center justify-center rounded-full border transition-all duration-300 ${req.met
+                        ? "bg-primary border-primary text-white shadow-sm shadow-primary/20"
+                        : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800"
+                      }`}
+                  >
+                    {req.met && <Check size={10} strokeWidth={4} />}
+                  </div>
+                  <span className={`text-[11px] transition-colors duration-300 ${req.met ? "text-primary font-semibold" : "text-slate-400 dark:text-slate-500"
+                    }`}>
+                    {req.label}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 

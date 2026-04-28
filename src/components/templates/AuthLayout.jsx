@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import nextLogo from '../../assets/next-level-ic.svg';
+import nextLogo from '../../assets/kospintar.svg';
 
 const AuthLayout = ({ children, title, subtitle, footerText, footerLink, footerLinkText }) => {
   return (
